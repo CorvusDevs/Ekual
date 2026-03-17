@@ -427,6 +427,36 @@ struct L10n {
         }
     }
 
+    var startEkual: String {
+        switch language {
+        case .english: "Start Ekual"
+        case .spanish: "Iniciar Ekual"
+        case .french: "Démarrer Ekual"
+        case .german: "Ekual starten"
+        case .portuguese: "Iniciar Ekual"
+        case .italian: "Avvia Ekual"
+        case .japanese: "Ekualを開始"
+        case .chinese: "启动Ekual"
+        case .korean: "Ekual 시작"
+        case .russian: "Запустить Ekual"
+        }
+    }
+
+    var stopEkual: String {
+        switch language {
+        case .english: "Stop Ekual"
+        case .spanish: "Detener Ekual"
+        case .french: "Arrêter Ekual"
+        case .german: "Ekual stoppen"
+        case .portuguese: "Parar Ekual"
+        case .italian: "Ferma Ekual"
+        case .japanese: "Ekualを停止"
+        case .chinese: "停止Ekual"
+        case .korean: "Ekual 중지"
+        case .russian: "Остановить Ekual"
+        }
+    }
+
     var menuBarHint: String {
         switch language {
         case .english: "Ekual lives in your menu bar.\nClick the waveform icon to access controls anytime."

@@ -24,9 +24,7 @@ final class WelcomeWindowController {
             return
         }
 
-        let welcomeView = WelcomeView { [weak self] in
-            self?.close()
-        }
+        let welcomeView = WelcomeView()
 
         let hostingView = NSHostingView(rootView: welcomeView)
         hostingView.sizingOptions = []
@@ -143,7 +141,6 @@ struct EkualApp: App {
 // MARK: - Welcome View
 
 struct WelcomeView: View {
-    var onStart: () -> Void
     @State private var engine = AudioEngine.shared
     @State private var settings = SettingsManager.shared
     @State private var launchAtLogin = true
@@ -238,7 +235,7 @@ struct WelcomeView: View {
                 }
             } label: {
                 Label {
-                    Text(engine.isRunning ? "Stop Ekual" : "Start Ekual")
+                    Text(engine.isRunning ? l10n.stopEkual : l10n.startEkual)
                         .font(.headline)
                 } icon: {
                     Image(systemName: engine.isRunning ? "stop.fill" : "power")

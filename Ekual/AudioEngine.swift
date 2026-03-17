@@ -3,6 +3,7 @@ import AudioToolbox
 import CoreAudio
 import Foundation
 import os
+import Synchronization
 
 // Architecture:
 // 1. Get the current default output device, save it
@@ -15,14 +16,15 @@ import os
 
 // MARK: - Lock-Free Ring Buffer
 
-/// A simple lock-free SPSC ring buffer for shuttling audio between the aggregate
+/// A lock-free SPSC ring buffer for shuttling audio between the aggregate
 /// IO proc (producer) and the HAL Output AU render callback (consumer).
 /// Both run on real-time threads — no locks, no allocations.
+/// Uses Synchronization.Atomic for correct cross-thread visibility.
 fileprivate final class AudioRingBuffer: @unchecked Sendable {
     private let capacity: Int
     private let buffer: UnsafeMutablePointer<Float>
-    private var writeIndex: Int = 0  // only written by producer
-    private var readIndex: Int = 0   // only written by consumer
+    private let _writeIndex = Atomic<Int>(0)  // only written by producer
+    private let _readIndex = Atomic<Int>(0)   // only written by consumer
 
     init(capacity: Int) {
         self.capacity = capacity
@@ -36,15 +38,24 @@ fileprivate final class AudioRingBuffer: @unchecked Sendable {
     }
 
     var availableToRead: Int {
-        let w = writeIndex
-        let r = readIndex
+        let w = _writeIndex.load(ordering: .acquiring)
+        let r = _readIndex.load(ordering: .acquiring)
         return w >= r ? (w - r) : (capacity - r + w)
     }
 
+    var availableToWrite: Int {
+        // Reserve one slot to distinguish full from empty
+        return capacity - 1 - availableToRead
+    }
+
     func write(_ data: UnsafePointer<Float>, count: Int) {
-        var remaining = count
+        let avail = availableToWrite
+        let toWrite = min(count, avail)
+        guard toWrite > 0 else { return }
+
+        var remaining = toWrite
         var src = data
-        var wi = writeIndex
+        var wi = _writeIndex.load(ordering: .relaxed)
         while remaining > 0 {
             let chunk = min(remaining, capacity - wi)
             buffer.advanced(by: wi).update(from: src, count: chunk)
@@ -52,15 +63,17 @@ fileprivate final class AudioRingBuffer: @unchecked Sendable {
             src = src.advanced(by: chunk)
             remaining -= chunk
         }
-        writeIndex = wi
+        _writeIndex.store(wi, ordering: .releasing)
     }
 
     func read(_ data: UnsafeMutablePointer<Float>, count: Int) -> Int {
         let avail = availableToRead
         let toRead = min(count, avail)
+        guard toRead > 0 else { return 0 }
+
         var remaining = toRead
         var dst = data
-        var ri = readIndex
+        var ri = _readIndex.load(ordering: .relaxed)
         while remaining > 0 {
             let chunk = min(remaining, capacity - ri)
             dst.update(from: buffer.advanced(by: ri), count: chunk)
@@ -68,7 +81,7 @@ fileprivate final class AudioRingBuffer: @unchecked Sendable {
             dst = dst.advanced(by: chunk)
             remaining -= chunk
         }
-        readIndex = ri
+        _readIndex.store(ri, ordering: .releasing)
         return toRead
     }
 }
@@ -84,12 +97,13 @@ private final class CompressorState: @unchecked Sendable {
     var channelCount: Int = 2
 }
 
-// Static storage for signal handler cleanup.
+// Static storage for emergency cleanup on termination signals.
 nonisolated(unsafe) private var _staticTapID: AudioObjectID = 0
 nonisolated(unsafe) private var _staticAggregateID: AudioObjectID = 0
 nonisolated(unsafe) private var _staticIOProcID: AudioDeviceIOProcID?
 nonisolated(unsafe) private var _staticOutputAU: AudioUnit?
-nonisolated private func emergencyCleanup() {
+
+private func emergencyCleanup() {
     if let au = _staticOutputAU {
         AudioOutputUnitStop(au)
         AudioComponentInstanceDispose(au)
@@ -109,6 +123,8 @@ nonisolated private func emergencyCleanup() {
         _staticTapID = 0
     }
 }
+
+private let _signalCleanupQueue = DispatchQueue(label: "com.pols.ekual.signal")
 
 @Observable
 @MainActor
@@ -156,6 +172,8 @@ final class AudioEngine {
     private let ioQueue = DispatchQueue(label: "com.pols.ekual.ioqueue", qos: .userInteractive)
 
     private let logger = Logger(subsystem: "com.pols.ekual", category: "AudioEngine")
+    private var sigTermSource: DispatchSourceSignal?
+    private var sigIntSource: DispatchSourceSignal?
 
     init() {
         let settings = SettingsManager.shared
@@ -173,8 +191,25 @@ final class AudioEngine {
             }
         }
 
-        signal(SIGTERM) { _ in emergencyCleanup(); exit(0) }
-        signal(SIGINT) { _ in emergencyCleanup(); exit(0) }
+        // Use DispatchSource for safe signal handling (async-signal-safe)
+        signal(SIGTERM, SIG_IGN)
+        signal(SIGINT, SIG_IGN)
+
+        let termSource = DispatchSource.makeSignalSource(signal: SIGTERM, queue: _signalCleanupQueue)
+        termSource.setEventHandler {
+            emergencyCleanup()
+            exit(0)
+        }
+        termSource.resume()
+        sigTermSource = termSource
+
+        let intSource = DispatchSource.makeSignalSource(signal: SIGINT, queue: _signalCleanupQueue)
+        intSource.setEventHandler {
+            emergencyCleanup()
+            exit(0)
+        }
+        intSource.resume()
+        sigIntSource = intSource
     }
 
     // MARK: - Start / Stop
@@ -462,7 +497,6 @@ final class AudioEngine {
 
             isRunning = true
             logger.info("Audio engine started successfully")
-            startMeterTimer()
 
         } catch {
             logger.error("Failed to start audio engine: \(error.localizedDescription)")
@@ -473,10 +507,9 @@ final class AudioEngine {
 
     func stop() {
         guard isRunning else { return }
+        stopMetering()
         cleanup()
         isRunning = false
-        inputLevelDb = -100.0
-        outputLevelDb = -100.0
         errorMessage = nil
         logger.info("Audio engine stopped")
     }
@@ -499,7 +532,9 @@ final class AudioEngine {
 
     // MARK: - Meter Polling
 
-    private func startMeterTimer() {
+    /// Call when the UI becomes visible to start meter updates.
+    func startMetering() {
+        guard isRunning, meterTimer == nil else { return }
         meterTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self, let statePtr = self.compressorStatePtr else { return }
@@ -507,6 +542,14 @@ final class AudioEngine {
                 self.outputLevelDb = statePtr.pointee.outputPeakDb
             }
         }
+    }
+
+    /// Call when the UI is dismissed to stop wasting CPU on meter updates.
+    func stopMetering() {
+        meterTimer?.invalidate()
+        meterTimer = nil
+        inputLevelDb = -100.0
+        outputLevelDb = -100.0
     }
 
     // MARK: - Cleanup
@@ -600,8 +643,6 @@ final class AudioEngine {
             AudioHardwareDestroyAggregateDevice(zombieID)
         }
 
-        // Give the system time to settle after destroying devices
-        Thread.sleep(forTimeInterval: 0.3)
     }
 
     // MARK: - Helpers

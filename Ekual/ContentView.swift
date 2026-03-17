@@ -43,6 +43,7 @@ struct ContentView: View {
                         engine.stop()
                     } else {
                         engine.start()
+                        engine.startMetering()
                     }
                 } label: {
                     Image(systemName: "power")
@@ -192,6 +193,8 @@ struct ContentView: View {
         .padding(20)
         .frame(width: 300)
         .fixedSize(horizontal: false, vertical: true)
+        .onAppear { engine.startMetering() }
+        .onDisappear { engine.stopMetering() }
     }
 
     private var releaseTimeLabel: String {
