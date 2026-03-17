@@ -88,7 +88,52 @@ struct L10n {
         }
     }
 
+    func switchingTo(_ device: String) -> String {
+        switch language {
+        case .english: "Switching to \(device)..."
+        case .spanish: "Cambiando a \(device)..."
+        case .french: "Basculement vers \(device)..."
+        case .german: "Wechsel zu \(device)..."
+        case .portuguese: "Mudando para \(device)..."
+        case .italian: "Passaggio a \(device)..."
+        case .japanese: "\(device) に切替中..."
+        case .chinese: "正在切换到 \(device)..."
+        case .korean: "\(device)(으)로 전환 중..."
+        case .russian: "Переключение на \(device)..."
+        }
+    }
+
     // MARK: - Labels
+
+    var outputDevice: String {
+        switch language {
+        case .english: "Output"
+        case .spanish: "Salida"
+        case .french: "Sortie"
+        case .german: "Ausgabe"
+        case .portuguese: "Saída"
+        case .italian: "Uscita"
+        case .japanese: "出力"
+        case .chinese: "输出"
+        case .korean: "출력"
+        case .russian: "Выход"
+        }
+    }
+
+    var systemDefault: String {
+        switch language {
+        case .english: "System Default"
+        case .spanish: "Predeterminado"
+        case .french: "Par Défaut"
+        case .german: "Systemstandard"
+        case .portuguese: "Padrão do Sistema"
+        case .italian: "Predefinito"
+        case .japanese: "システムデフォルト"
+        case .chinese: "系统默认"
+        case .korean: "시스템 기본값"
+        case .russian: "По умолчанию"
+        }
+    }
 
     var preset: String {
         switch language {
@@ -454,6 +499,21 @@ struct L10n {
         case .chinese: "停止Ekual"
         case .korean: "Ekual 중지"
         case .russian: "Остановить Ekual"
+        }
+    }
+
+    var tryAgain: String {
+        switch language {
+        case .english: "Try Again"
+        case .spanish: "Reintentar"
+        case .french: "Réessayer"
+        case .german: "Erneut versuchen"
+        case .portuguese: "Tentar Novamente"
+        case .italian: "Riprova"
+        case .japanese: "再試行"
+        case .chinese: "重试"
+        case .korean: "다시 시도"
+        case .russian: "Повторить"
         }
     }
 

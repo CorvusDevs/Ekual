@@ -7,8 +7,14 @@ struct ContentView: View {
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var showInfoPopover = false
     @State private var showLanguagePicker = false
+    @State private var switchingPulse = false
 
     private var l10n: L10n { settings.l10n }
+
+    /// Engine is active or in the middle of a device switch
+    private var isEngineActive: Bool {
+        engine.isRunning || engine.switchingToDevice != nil
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -28,6 +34,7 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Info")
                 .popover(isPresented: $showInfoPopover, arrowEdge: .bottom) {
                     Text(l10n.appDescription)
                         .font(.caption)
@@ -56,29 +63,40 @@ struct ContentView: View {
                         )
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(engine.isRunning ? l10n.stopEkual : l10n.startEkual)
             }
 
             // Status
-            if let error = engine.errorMessage {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-                    .multilineTextAlignment(.center)
-            } else {
-                Text(engine.isRunning ? l10n.statusActive : l10n.statusOff)
-                    .font(.subheadline)
-                    .foregroundStyle(engine.isRunning ? .green : .secondary)
-            }
+            statusView
 
             Divider()
 
-            // Level Meters
-            if engine.isRunning {
+            // Level Meters — always present when active, zeroed during switching
+            if isEngineActive {
                 VStack(spacing: 8) {
-                    LevelMeterRow(label: l10n.input, levelDb: engine.inputLevelDb)
-                    LevelMeterRow(label: l10n.output, levelDb: engine.outputLevelDb)
+                    LevelMeterRow(label: l10n.input, levelDb: engine.isRunning ? engine.inputLevelDb : -100)
+                    LevelMeterRow(label: l10n.output, levelDb: engine.isRunning ? engine.outputLevelDb : -100)
                 }
-                .transition(.opacity)
+                .opacity(engine.switchingToDevice != nil ? 0.4 : 1.0)
+                .animation(.easeInOut(duration: 0.3), value: engine.switchingToDevice != nil)
+            }
+
+            // Output Device Picker
+            if isEngineActive {
+                HStack {
+                    Text(l10n.outputDevice)
+                        .font(.caption.bold())
+                    Spacer()
+                    Picker("", selection: selectedDeviceBinding) {
+                        Text(l10n.systemDefault).tag(nil as String?)
+                        ForEach(engine.availableOutputDevices) { device in
+                            Text(device.name).tag(device.uid as String?)
+                        }
+                    }
+                    .labelsHidden()
+                    .fixedSize()
+                    .accessibilityLabel(l10n.outputDevice)
+                }
             }
 
             // Preset Picker
@@ -93,6 +111,7 @@ struct ContentView: View {
                 }
                 .labelsHidden()
                 .fixedSize()
+                .accessibilityLabel(l10n.preset)
                 .onChange(of: settings.selectedPreset) { _, newPreset in
                     if newPreset != .custom {
                         engine.applyPreset(newPreset)
@@ -148,10 +167,6 @@ struct ContentView: View {
                         }
                     }
 
-                Toggle(l10n.autoStart, isOn: $settings.autoStartProcessing)
-                    .font(.caption)
-                    .toggleStyle(.checkbox)
-
                 Toggle(l10n.globalShortcut, isOn: $settings.globalShortcutEnabled)
                     .font(.caption)
                     .toggleStyle(.checkbox)
@@ -173,6 +188,7 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(l10n.language_)
                 .popover(isPresented: $showLanguagePicker, arrowEdge: .bottom) {
                     LanguagePickerView(settings: settings, l10n: l10n) {
                         showLanguagePicker = false
@@ -195,6 +211,90 @@ struct ContentView: View {
         .fixedSize(horizontal: false, vertical: true)
         .onAppear { engine.startMetering() }
         .onDisappear { engine.stopMetering() }
+        .animation(.easeInOut(duration: 0.3), value: isEngineActive)
+    }
+
+    // MARK: - Status View
+
+    @ViewBuilder
+    private var statusView: some View {
+        if let error = engine.errorMessage {
+            VStack(spacing: 6) {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+                Button {
+                    engine.start()
+                    engine.startMetering()
+                } label: {
+                    Label(l10n.tryAgain, systemImage: "arrow.clockwise")
+                        .font(.caption)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityLabel(l10n.tryAgain)
+            }
+        } else {
+            VStack(spacing: 2) {
+                // Status text — crossfade between states
+                Group {
+                    if let device = engine.switchingToDevice {
+                        HStack(spacing: 6) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text(l10n.switchingTo(device))
+                                .font(.subheadline)
+                                .foregroundStyle(.orange)
+                        }
+                        .opacity(switchingPulse ? 0.5 : 1.0)
+                        .onAppear {
+                            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                                switchingPulse = true
+                            }
+                        }
+                        .onDisappear { switchingPulse = false }
+                    } else {
+                        Text(engine.isRunning ? l10n.statusActive : l10n.statusOff)
+                            .font(.subheadline)
+                            .foregroundStyle(engine.isRunning ? .green : .secondary)
+                    }
+                }
+                .animation(.easeInOut(duration: 0.4), value: engine.switchingToDevice == nil)
+
+                // Device name — always visible when active
+                if isEngineActive {
+                    let deviceName = engine.switchingToDevice ?? engine.currentDeviceName
+                    if !deviceName.isEmpty {
+                        HStack(spacing: 4) {
+                            Image(systemName: "speaker.wave.2.fill")
+                                .font(.caption2)
+                            Text(deviceName)
+                                .font(.caption)
+                                .contentTransition(.numericText())
+                        }
+                        .foregroundStyle(.secondary)
+                        .animation(.easeInOut(duration: 0.3), value: deviceName)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Bindings
+
+    private var selectedDeviceBinding: Binding<String?> {
+        Binding<String?>(
+            get: { engine.preferredDeviceUID },
+            set: { newUID in
+                if let uid = newUID {
+                    let device = engine.availableOutputDevices.first { $0.uid == uid }
+                    engine.switchToDevice(device)
+                } else {
+                    engine.switchToDevice(nil)
+                }
+            }
+        )
     }
 
     private var releaseTimeLabel: String {
@@ -299,6 +399,8 @@ struct SliderRow: View {
             }
             Slider(value: $value, in: range)
                 .labelsHidden()
+                .accessibilityLabel(label)
+                .accessibilityValue(valueText)
         }
     }
 }
@@ -334,6 +436,9 @@ struct LevelMeterRow: View {
                 .frame(width: 48, alignment: .trailing)
                 .foregroundStyle(.secondary)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue(String(format: "%.0f dB", levelDb))
     }
 
     private var meterFraction: CGFloat {

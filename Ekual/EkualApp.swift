@@ -91,10 +91,6 @@ struct EkualApp: App {
                     didSetup = true
 
                     WelcomeWindowController.shared.showIfFirstLaunch()
-
-                    if settings.hasLaunchedBefore {
-                        handleAutoStart()
-                    }
                     updateShortcutMonitor()
                 }
                 .onChange(of: settings.globalShortcutEnabled) { _, _ in
@@ -105,11 +101,6 @@ struct EkualApp: App {
                 .symbolVariant(engine.isRunning ? .none : .slash)
         }
         .menuBarExtraStyle(.window)
-    }
-
-    private func handleAutoStart() {
-        guard settings.autoStartProcessing && !engine.isRunning else { return }
-        engine.start()
     }
 
     private func updateShortcutMonitor() {
@@ -144,7 +135,6 @@ struct WelcomeView: View {
     @State private var engine = AudioEngine.shared
     @State private var settings = SettingsManager.shared
     @State private var launchAtLogin = true
-    @State private var autoStart = true
     @State private var globalShortcut = false
     @State private var permissionGranted = false
 
@@ -211,10 +201,6 @@ struct WelcomeView: View {
                     .font(.callout)
                     .toggleStyle(.checkbox)
 
-                Toggle(l10n.autoStart, isOn: $autoStart)
-                    .font(.callout)
-                    .toggleStyle(.checkbox)
-
                 Toggle(l10n.globalShortcut, isOn: $globalShortcut)
                     .font(.callout)
                     .toggleStyle(.checkbox)
@@ -225,7 +211,6 @@ struct WelcomeView: View {
                 if engine.isRunning {
                     engine.stop()
                 } else {
-                    settings.autoStartProcessing = autoStart
                     settings.globalShortcutEnabled = globalShortcut
                     if launchAtLogin {
                         try? SMAppService.mainApp.register()

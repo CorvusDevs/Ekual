@@ -53,6 +53,7 @@ final class SettingsManager {
         static let globalShortcutEnabled = "globalShortcutEnabled"
         static let appLanguage = "appLanguage"
         static let hasLaunchedBefore = "hasLaunchedBefore"
+        static let preferredDeviceUID = "preferredDeviceUID"
     }
 
     // MARK: - Defaults
@@ -114,6 +115,16 @@ final class SettingsManager {
         }
     }
 
+    var preferredDeviceUID: String? {
+        didSet {
+            if let uid = preferredDeviceUID {
+                UserDefaults.standard.set(uid, forKey: Keys.preferredDeviceUID)
+            } else {
+                UserDefaults.standard.removeObject(forKey: Keys.preferredDeviceUID)
+            }
+        }
+    }
+
     var l10n: L10n { L10n(language: appLanguage) }
 
     // MARK: - Init
@@ -143,6 +154,7 @@ final class SettingsManager {
         self.autoStartProcessing = defaults.bool(forKey: Keys.autoStart)
         self.globalShortcutEnabled = defaults.bool(forKey: Keys.globalShortcutEnabled)
         self.hasLaunchedBefore = defaults.bool(forKey: Keys.hasLaunchedBefore)
+        self.preferredDeviceUID = defaults.string(forKey: Keys.preferredDeviceUID)
 
         if let langRaw = defaults.string(forKey: Keys.appLanguage),
            let lang = AppLanguage(rawValue: langRaw) {
@@ -171,6 +183,7 @@ final class SettingsManager {
 
     func resetToDefaults() {
         applyPreset(.medium)
+        preferredDeviceUID = nil
     }
 
     private func updatePresetIfNeeded() {
