@@ -59,7 +59,6 @@ struct ContentView: View {
                             engine.stop()
                         } else {
                             engine.start()
-                            engine.startMetering()
                         }
                     } label: {
                         Image(systemName: "power")
@@ -180,12 +179,17 @@ struct ContentView: View {
                     }
                 }
                 .task(id: showExcludedApps) {
-                    // While the disclosure group is expanded, poll for new apps
+                    // While the disclosure group is expanded, poll for new/removed apps
                     guard showExcludedApps else { return }
                     while !Task.isCancelled {
                         try? await Task.sleep(for: .seconds(3))
                         guard !Task.isCancelled else { break }
-                        runningApps = engine.getRunningAudioApps()
+                        // Cheap PID check — only rebuild with icons if apps changed
+                        let currentPIDs = Set(runningApps.map(\.pid))
+                        let livePIDs = engine.getRunningAppPIDs()
+                        if currentPIDs != livePIDs {
+                            runningApps = engine.getRunningAudioApps()
+                        }
                     }
                 }
             }
@@ -449,7 +453,6 @@ struct ContentView: View {
                     .multilineTextAlignment(.center)
                 Button {
                     engine.start()
-                    engine.startMetering()
                 } label: {
                     Label(l10n.tryAgain, systemImage: "arrow.clockwise")
                         .font(.caption)
@@ -514,9 +517,6 @@ struct ContentView: View {
 
             GlowingPermissionButton(l10n: l10n) {
                 engine.start()
-                if engine.isRunning {
-                    engine.startMetering()
-                }
             }
         }
     }

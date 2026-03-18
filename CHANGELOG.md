@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5 — Performance Optimization
+
+### Fixes
+- Metering timer no longer runs when the popover is closed or meters are collapsed — was the primary source of ~15% idle CPU usage
+- Removed unconditional `startMetering()` calls from power, try-again, and permission buttons
+- App list polling now does a cheap PID-only check before rebuilding the full list with icons
+
+---
+
 ## v1.4 — App Exclusion & Customizable Keyboard Shortcut
 
 ### New Features

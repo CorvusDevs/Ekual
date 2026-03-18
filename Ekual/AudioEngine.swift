@@ -469,6 +469,19 @@ final class AudioEngine {
 
     // MARK: - App Exclusion
 
+    /// Lightweight check — returns just the PIDs of eligible running apps (no icon fetching).
+    func getRunningAppPIDs() -> Set<pid_t> {
+        let ownBundleID = Bundle.main.bundleIdentifier
+        var pids = Set<pid_t>()
+        for app in NSWorkspace.shared.runningApplications {
+            guard let bundleID = app.bundleIdentifier,
+                  app.activationPolicy == .regular,
+                  bundleID != ownBundleID else { continue }
+            pids.insert(app.processIdentifier)
+        }
+        return pids
+    }
+
     func getRunningAudioApps() -> [RunningAudioApp] {
         let ownBundleID = Bundle.main.bundleIdentifier
         return NSWorkspace.shared.runningApplications.compactMap { app in
