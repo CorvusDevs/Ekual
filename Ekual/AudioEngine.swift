@@ -54,6 +54,25 @@ private func emergencyCleanup() {
 
 private let _signalCleanupQueue = DispatchQueue(label: "com.pols.ekual.signal")
 
+// MARK: - Running Audio App
+
+struct RunningAudioApp: Identifiable, Hashable {
+    let pid: pid_t
+    let bundleID: String
+    let name: String
+    let icon: NSImage?
+    var id: pid_t { pid }
+
+    static func == (lhs: RunningAudioApp, rhs: RunningAudioApp) -> Bool {
+        lhs.pid == rhs.pid && lhs.bundleID == rhs.bundleID
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(pid)
+        hasher.combine(bundleID)
+    }
+}
+
 @Observable
 @MainActor
 final class AudioEngine {
@@ -194,7 +213,17 @@ final class AudioEngine {
                 let selfProcessObjectID = try getProcessObjectID(for: getpid())
                 logger.info("Own process AudioObjectID: \(selfProcessObjectID)")
 
-                let tapDesc = CATapDescription(stereoGlobalTapButExcludeProcesses: [selfProcessObjectID])
+                // Build exclusion list: self + any user-excluded apps
+                // Use the HAL process object list to find ALL process objects (including
+                // child/helper processes) matching the excluded bundle IDs.
+                var excludedObjectIDs: [AudioObjectID] = [selfProcessObjectID]
+                let excludedBundleIDs = SettingsManager.shared.excludedBundleIDs
+
+                let matchedObjects = getAllProcessObjectIDs(forBundleIDs: excludedBundleIDs)
+                excludedObjectIDs.append(contentsOf: matchedObjects)
+                logger.info("Exclusion list: \(excludedObjectIDs.count) process objects (\(matchedObjects.count) from \(excludedBundleIDs.count) excluded bundle IDs)")
+
+                let tapDesc = CATapDescription(stereoGlobalTapButExcludeProcesses: excludedObjectIDs)
                 tapDesc.uuid = UUID()
                 tapDesc.name = "Ekual Loudness Tap"
                 tapDesc.muteBehavior = .mutedWhenTapped
@@ -436,6 +465,48 @@ final class AudioEngine {
 
     func refreshDeviceList() {
         availableOutputDevices = getOutputDevices()
+    }
+
+    // MARK: - App Exclusion
+
+    func getRunningAudioApps() -> [RunningAudioApp] {
+        let ownBundleID = Bundle.main.bundleIdentifier
+        return NSWorkspace.shared.runningApplications.compactMap { app in
+            guard let bundleID = app.bundleIdentifier,
+                  app.activationPolicy == .regular,
+                  bundleID != ownBundleID else { return nil }
+            let name = app.localizedName ?? bundleID
+            let icon = app.icon
+            icon?.size = NSSize(width: 16, height: 16)
+            return RunningAudioApp(pid: app.processIdentifier, bundleID: bundleID, name: name, icon: icon)
+        }
+        .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    /// Rebuilds the entire audio pipeline (tap + aggregate + IO) with the
+    /// updated exclusion list. `isRunning` stays `true` throughout so
+    /// the UI doesn't flicker or reset.
+    func applyExclusionListChange() {
+        guard isRunning, tapID != kAudioObjectUnknown else { return }
+        logger.info("Applying exclusion list change — rebuilding pipeline")
+
+        let wasMetering = meterTimer != nil
+        stopMetering()
+        removeDeviceChangeListener()
+
+        // Tear down everything (device pipeline + tap) — but keep isRunning = true
+        cleanup()
+
+        // Rebuild from scratch — start() checks `guard !isRunning`, so
+        // temporarily clear it, then restore on success or failure.
+        isRunning = false
+        start()
+
+        // If start() failed, isRunning is still false (correct).
+        // If start() succeeded, isRunning is true (correct).
+        if wasMetering && isRunning {
+            startMetering()
+        }
     }
 
     func switchToDevice(_ device: OutputDevice?) {
@@ -883,6 +954,60 @@ final class AudioEngine {
         )
         guard status == noErr else { throw AudioEngineError.propertyQueryFailed(status) }
         return processObjectID
+    }
+
+    /// Returns ALL HAL process AudioObjectIDs whose bundle ID matches any in the given set.
+    /// This uses kAudioHardwarePropertyProcessObjectList to enumerate every process
+    /// known to the audio system (including child/helper processes like browser renderers),
+    /// then checks each one's kAudioProcessPropertyBundleID.
+    private func getAllProcessObjectIDs(forBundleIDs bundleIDs: Set<String>) -> [AudioObjectID] {
+        guard !bundleIDs.isEmpty else { return [] }
+
+        // 1. Get the full list of HAL process objects
+        var listAddress = AudioObjectPropertyAddress(
+            mSelector: kAudioHardwarePropertyProcessObjectList,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        var listSize: UInt32 = 0
+        guard AudioObjectGetPropertyDataSize(
+            AudioObjectID(kAudioObjectSystemObject), &listAddress, 0, nil, &listSize
+        ) == noErr, listSize > 0 else { return [] }
+
+        let count = Int(listSize) / MemoryLayout<AudioObjectID>.size
+        var processObjects = [AudioObjectID](repeating: 0, count: count)
+        guard AudioObjectGetPropertyData(
+            AudioObjectID(kAudioObjectSystemObject), &listAddress, 0, nil, &listSize, &processObjects
+        ) == noErr else { return [] }
+
+        // 2. For each process object, get its bundle ID and check if it matches
+        var matched: [AudioObjectID] = []
+        for objID in processObjects {
+            var bundleIDAddress = AudioObjectPropertyAddress(
+                mSelector: kAudioProcessPropertyBundleID,
+                mScope: kAudioObjectPropertyScopeGlobal,
+                mElement: kAudioObjectPropertyElementMain
+            )
+            var bundleIDSize = UInt32(MemoryLayout<CFString>.size)
+            var bundleIDRef: CFString = "" as CFString
+            let status = withUnsafeMutablePointer(to: &bundleIDRef) { ptr in
+                AudioObjectGetPropertyData(objID, &bundleIDAddress, 0, nil, &bundleIDSize, ptr)
+            }
+            if status == noErr {
+                let bundleID = bundleIDRef as String
+                // Use prefix matching: e.g. excluding "com.brave.Browser" also
+                // catches "com.brave.Browser.helper" (renderer/audio child processes)
+                let isMatch = bundleIDs.contains(where: { excludedID in
+                    bundleID == excludedID || bundleID.hasPrefix(excludedID + ".")
+                })
+                if isMatch {
+                    matched.append(objID)
+                    logger.info("HAL process match: \(bundleID) → AudioObjectID \(objID)")
+                }
+            }
+        }
+
+        return matched
     }
 }
 

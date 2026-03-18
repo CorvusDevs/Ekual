@@ -1,5 +1,4 @@
 import SwiftUI
-import Carbon.HIToolbox
 import ServiceManagement
 
 // MARK: - Welcome Window Controller
@@ -250,12 +249,15 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
 
         guard SettingsManager.shared.globalShortcutEnabled else { return }
 
+        let settings = SettingsManager.shared
+        let expectedKeyCode = settings.shortcutKeyCode
+        let expectedModifiers = NSEvent.ModifierFlags(rawValue: settings.shortcutModifiers)
+            .intersection(.deviceIndependentFlagsMask)
+
         shortcutMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
             let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-            let isControlOption = flags == [.control, .option]
-            let isE = event.keyCode == UInt16(kVK_ANSI_E)
 
-            if isControlOption && isE {
+            if flags == expectedModifiers && event.keyCode == expectedKeyCode {
                 Task { @MainActor in
                     let engine = AudioEngine.shared
                     if engine.isRunning {
@@ -378,7 +380,7 @@ struct WelcomeView: View {
                     .font(.callout)
                     .toggleStyle(.checkbox)
 
-                Toggle(l10n.globalShortcut, isOn: $globalShortcut)
+                Toggle(l10n.globalShortcutToggle, isOn: $globalShortcut)
                     .font(.callout)
                     .toggleStyle(.checkbox)
             }

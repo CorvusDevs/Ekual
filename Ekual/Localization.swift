@@ -287,18 +287,63 @@ struct L10n {
         }
     }
 
-    var globalShortcut: String {
+    var globalShortcutToggle: String {
         switch language {
-        case .english: "Global shortcut (⌃⌥E)"
-        case .spanish: "Atajo global (⌃⌥E)"
-        case .french: "Raccourci global (⌃⌥E)"
-        case .german: "Globales Tastenkürzel (⌃⌥E)"
-        case .portuguese: "Atalho global (⌃⌥E)"
-        case .italian: "Scorciatoia globale (⌃⌥E)"
-        case .japanese: "グローバルショートカット (⌃⌥E)"
-        case .chinese: "全局快捷键 (⌃⌥E)"
-        case .korean: "전역 단축키 (⌃⌥E)"
-        case .russian: "Глобальное сочетание (⌃⌥E)"
+        case .english: "Global Shortcut"
+        case .spanish: "Atajo Global"
+        case .french: "Raccourci Global"
+        case .german: "Globales Tastenkürzel"
+        case .portuguese: "Atalho Global"
+        case .italian: "Scorciatoia Globale"
+        case .japanese: "グローバルショートカット"
+        case .chinese: "全局快捷键"
+        case .korean: "전역 단축키"
+        case .russian: "Глобальное сочетание"
+        }
+    }
+
+    var pressKeys: String {
+        switch language {
+        case .english: "Press keys..."
+        case .spanish: "Pulsa teclas..."
+        case .french: "Appuyez..."
+        case .german: "Tasten drücken..."
+        case .portuguese: "Pressione..."
+        case .italian: "Premi tasti..."
+        case .japanese: "キーを押す..."
+        case .chinese: "按键..."
+        case .korean: "키 입력..."
+        case .russian: "Нажмите..."
+        }
+    }
+
+    var excludedApps: String {
+        switch language {
+        case .english: "Excluded Apps"
+        case .spanish: "Apps Excluidas"
+        case .french: "Apps Exclues"
+        case .german: "Ausgeschlossene Apps"
+        case .portuguese: "Apps Excluídos"
+        case .italian: "App Escluse"
+        case .japanese: "除外アプリ"
+        case .chinese: "排除的应用"
+        case .korean: "제외된 앱"
+        case .russian: "Исключённые приложения"
+        }
+    }
+
+    var noAppsRunning: String {
+        switch language {
+        case .english: "No audio apps detected"
+        case .spanish: "No se detectaron apps de audio"
+        case .french: "Aucune app audio détectée"
+        case .german: "Keine Audio-Apps erkannt"
+        case .portuguese: "Nenhum app de áudio detectado"
+        case .italian: "Nessuna app audio rilevata"
+        case .japanese: "オーディオアプリが見つかりません"
+        case .chinese: "未检测到音频应用"
+        case .korean: "오디오 앱이 감지되지 않음"
+        case .russian: "Аудио-приложения не обнаружены"
         }
     }
 

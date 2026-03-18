@@ -14,6 +14,8 @@ struct ContentView: View {
     @State private var newPresetName = ""
     @State private var renameText = ""
     @State private var presetToRenameID: UUID?
+    @State private var showExcludedApps = false
+    @State private var runningApps: [RunningAudioApp] = []
 
     private var l10n: L10n { settings.l10n }
 
@@ -127,6 +129,64 @@ struct ContentView: View {
                     .labelsHidden()
                     .fixedSize()
                     .accessibilityLabel(l10n.outputDevice)
+                }
+            }
+
+            // Excluded Apps
+            if isEngineActive {
+                DisclosureGroup(l10n.excludedApps, isExpanded: $showExcludedApps) {
+                    if runningApps.isEmpty {
+                        Text(l10n.noAppsRunning)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 2)
+                    } else {
+                        ScrollView {
+                            VStack(spacing: 0) {
+                                ForEach(runningApps) { app in
+                                    HStack(spacing: 6) {
+                                        if let icon = app.icon {
+                                            Image(nsImage: icon)
+                                                .resizable()
+                                                .frame(width: 14, height: 14)
+                                        }
+                                        Text(app.name)
+                                            .font(.caption2)
+                                            .lineLimit(1)
+                                            .truncationMode(.tail)
+                                        Spacer()
+                                        Toggle("", isOn: exclusionBinding(for: app.bundleID))
+                                            .toggleStyle(.switch)
+                                            .controlSize(.mini)
+                                            .labelsHidden()
+                                    }
+                                    .padding(.vertical, 2)
+                                    .padding(.horizontal, 4)
+                                }
+                            }
+                        }
+                        .frame(maxHeight: 120)
+                    }
+                }
+                .font(.caption.bold())
+                .onAppear {
+                    // Refresh every time the popover appears
+                    runningApps = engine.getRunningAudioApps()
+                }
+                .onChange(of: showExcludedApps) { _, expanded in
+                    if expanded {
+                        runningApps = engine.getRunningAudioApps()
+                    }
+                }
+                .task(id: showExcludedApps) {
+                    // While the disclosure group is expanded, poll for new apps
+                    guard showExcludedApps else { return }
+                    while !Task.isCancelled {
+                        try? await Task.sleep(for: .seconds(3))
+                        guard !Task.isCancelled else { break }
+                        runningApps = engine.getRunningAudioApps()
+                    }
                 }
             }
 
@@ -276,12 +336,29 @@ struct ContentView: View {
                     .font(.caption)
                     .toggleStyle(.checkbox)
 
-                Toggle(l10n.globalShortcut, isOn: $settings.globalShortcutEnabled)
-                    .font(.caption)
-                    .toggleStyle(.checkbox)
-                    .onChange(of: settings.globalShortcutEnabled) { _, _ in
+                HStack {
+                    Toggle(l10n.globalShortcutToggle, isOn: $settings.globalShortcutEnabled)
+                        .font(.caption)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: settings.globalShortcutEnabled) { _, _ in
+                            StatusBarController.shared.updateShortcutMonitor()
+                        }
+
+                    Spacer()
+
+                    ShortcutRecorderButton(
+                        keyCode: $settings.shortcutKeyCode,
+                        modifiers: $settings.shortcutModifiers,
+                        displayString: settings.shortcutDisplayString,
+                        pressKeysLabel: l10n.pressKeys
+                    )
+                    .onChange(of: settings.shortcutKeyCode) { _, _ in
                         StatusBarController.shared.updateShortcutMonitor()
                     }
+                    .onChange(of: settings.shortcutModifiers) { _, _ in
+                        StatusBarController.shared.updateShortcutMonitor()
+                    }
+                }
             }
 
             HStack {
@@ -503,6 +580,20 @@ struct ContentView: View {
         )
     }
 
+    private func exclusionBinding(for bundleID: String) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { settings.excludedBundleIDs.contains(bundleID) },
+            set: { excluded in
+                if excluded {
+                    settings.excludedBundleIDs.insert(bundleID)
+                } else {
+                    settings.excludedBundleIDs.remove(bundleID)
+                }
+                engine.applyExclusionListChange()
+            }
+        )
+    }
+
     private var releaseTimeLabel: String {
         let ms = Int(engine.releaseTime * 1000)
         if ms < 1000 {
@@ -544,6 +635,75 @@ private struct GlowingPermissionButton: View {
         .shadow(color: .red.opacity(glowing ? 0.6 : 0.15), radius: glowing ? 10 : 4)
         .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: glowing)
         .onAppear { glowing = true }
+    }
+}
+
+// MARK: - Shortcut Recorder Button
+
+private struct ShortcutRecorderButton: View {
+    @Binding var keyCode: UInt16
+    @Binding var modifiers: UInt
+    let displayString: String
+    let pressKeysLabel: String
+
+    @State private var isRecording = false
+    @State private var monitor: Any?
+
+    var body: some View {
+        Button {
+            if isRecording {
+                stopRecording()
+            } else {
+                startRecording()
+            }
+        } label: {
+            Text(isRecording ? pressKeysLabel : displayString)
+                .font(.caption.monospaced())
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(isRecording ? Color.accentColor.opacity(0.15) : Color.secondary.opacity(0.1))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(isRecording ? Color.accentColor : Color.secondary.opacity(0.3), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+        .onDisappear { stopRecording() }
+    }
+
+    private func startRecording() {
+        isRecording = true
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            // Escape cancels recording
+            if event.keyCode == 53 {
+                stopRecording()
+                return nil
+            }
+
+            // Require at least one modifier (control, option, command, or shift)
+            let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            let hasModifier = !flags.intersection([.control, .option, .command, .shift]).isEmpty
+
+            if hasModifier {
+                keyCode = event.keyCode
+                modifiers = flags.rawValue
+                stopRecording()
+                return nil // consume the event
+            }
+
+            return nil // consume all key events while recording
+        }
+    }
+
+    private func stopRecording() {
+        isRecording = false
+        if let m = monitor {
+            NSEvent.removeMonitor(m)
+            monitor = nil
+        }
     }
 }
 

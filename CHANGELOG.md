@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.4 — App Exclusion & Customizable Keyboard Shortcut
+
+### New Features
+- **App Exclusion** — Exclude specific apps from loudness equalization; their audio bypasses processing entirely
+- **Customizable Keyboard Shortcut** — Replace the default ⌃⌥E with any modifier+key combo via an inline recorder
+- **Auto-refreshing app list** — Excluded Apps dropdown polls for newly launched apps every 3 seconds
+
+### Improvements
+- HAL process object enumeration with prefix matching catches child/helper processes (e.g. browser audio renderers)
+- Full pipeline rebuild on exclusion change ensures the tap is recreated with the correct process list
+- Shortcut recorder with live key capture inside NSPopover
+- New localized strings for exclusion and shortcut features in all 10 languages
+
+---
+
 ## v1.3 — Custom Presets, Lookahead, Auto-Start & Distribution
 
 ### New Features
