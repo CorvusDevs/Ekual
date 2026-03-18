@@ -65,6 +65,28 @@ struct LoudnessCompressor {
     /// Number of frames per processing block.
     private let blockSize: Int = 32
 
+    // MARK: - Lookahead Ring Buffer
+    // 2-block lookahead (~1.3ms at 48kHz) for predictive envelope tracking.
+    // The envelope detector sees upcoming transients before the audio is output,
+    // preventing audible pumping on sudden loud sounds.
+
+    private let lookaheadBlocks: Int = 2
+
+    /// Pre-allocated ring buffer holding lookaheadBlocks slots of audio.
+    private var ringBuffer: UnsafeMutablePointer<Float>?
+
+    /// RMS value for each slot in the ring buffer.
+    private var ringRMS: UnsafeMutablePointer<Float>?
+
+    /// Number of samples per ring buffer slot (blockSize * channelCount).
+    private var ringSlotSize: Int = 0
+
+    /// Current write position in the ring buffer.
+    private var ringWriteIndex: Int = 0
+
+    /// True once the ring buffer has been fully filled at least once.
+    private var ringPrimed: Bool = false
+
     // MARK: - Initialization
 
     init(sampleRate: Float = 44100.0) {
@@ -100,6 +122,37 @@ struct LoudnessCompressor {
         updateCoefficients()
     }
 
+    // MARK: - Lookahead Lifecycle
+
+    /// Allocate the lookahead ring buffer. Called once on first process call.
+    private mutating func initializeLookahead(channelCount: Int) {
+        let slotSize = blockSize * channelCount
+        let totalFloats = lookaheadBlocks * slotSize
+
+        let buf = UnsafeMutablePointer<Float>.allocate(capacity: totalFloats)
+        buf.initialize(repeating: 0.0, count: totalFloats)
+        ringBuffer = buf
+
+        let rms = UnsafeMutablePointer<Float>.allocate(capacity: lookaheadBlocks)
+        rms.initialize(repeating: 0.0, count: lookaheadBlocks)
+        ringRMS = rms
+
+        ringSlotSize = slotSize
+        ringWriteIndex = 0
+        ringPrimed = false
+    }
+
+    /// Free lookahead ring buffer memory. Call before deallocating the compressor.
+    mutating func deallocate() {
+        ringBuffer?.deallocate()
+        ringBuffer = nil
+        ringRMS?.deallocate()
+        ringRMS = nil
+        ringSlotSize = 0
+        ringWriteIndex = 0
+        ringPrimed = false
+    }
+
     // MARK: - Static Compression Curve
 
     /// Compute gain reduction in dB for a given input level in dB.
@@ -118,9 +171,10 @@ struct LoudnessCompressor {
         }
     }
 
-    // MARK: - Process Audio (In-Place, Block-Based)
+    // MARK: - Process Audio (In-Place, Block-Based with Lookahead)
 
-    /// Process interleaved float audio in-place using block-based envelope tracking.
+    /// Process interleaved float audio in-place using block-based envelope tracking
+    /// with a 2-block lookahead for predictive transient handling.
     @discardableResult
     mutating func process(
         buffer: UnsafeMutablePointer<Float>,
@@ -129,6 +183,17 @@ struct LoudnessCompressor {
     ) -> (inputPeakDb: Float, outputPeakDb: Float) {
         let totalSamples = frameCount * channelCount
         guard totalSamples > 0, channelCount > 0 else {
+            return (-100.0, -100.0)
+        }
+
+        // Lazy-init or re-init ring buffer if channel count changed
+        let expectedSlotSize = blockSize * channelCount
+        if ringBuffer == nil || ringSlotSize != expectedSlotSize {
+            deallocate()
+            initializeLookahead(channelCount: channelCount)
+        }
+
+        guard let ringBuf = ringBuffer, let ringRms = ringRMS else {
             return (-100.0, -100.0)
         }
 
@@ -144,7 +209,7 @@ struct LoudnessCompressor {
             let blockSamples = currentBlockSize * channelCount
             let blockPtr = buffer.advanced(by: framesProcessed * channelCount)
 
-            // --- 1. Compute block RMS using vDSP (sum of squares over all samples) ---
+            // --- 1. Compute block RMS using vDSP ---
             var sumSquares: Float = 0.0
             vDSP_dotpr(blockPtr, 1, blockPtr, 1, &sumSquares, vDSP_Length(blockSamples))
             let blockRms = sqrtf(sumSquares / Float(blockSamples))
@@ -152,32 +217,57 @@ struct LoudnessCompressor {
             // Track input peak
             if blockRms > inputPeak { inputPeak = blockRms }
 
-            // --- 2. Envelope tracking (block-level) ---
-            let envCoeff: Float = blockRms > envelopeLevel ? blockAttackCoeff : blockReleaseCoeff
-            envelopeLevel = envCoeff * envelopeLevel + (1.0 - envCoeff) * blockRms
+            // --- 2. Store incoming block in ring buffer ---
+            let writeSlotPtr = ringBuf.advanced(by: ringWriteIndex * ringSlotSize)
+            memcpy(writeSlotPtr, blockPtr, blockSamples * MemoryLayout<Float>.size)
+            // Zero remaining slot space if current block is smaller than blockSize
+            if blockSamples < ringSlotSize {
+                memset(writeSlotPtr.advanced(by: blockSamples), 0,
+                       (ringSlotSize - blockSamples) * MemoryLayout<Float>.size)
+            }
+            ringRms[ringWriteIndex] = blockRms
 
-            // --- 3. Compute gain in dB ---
+            // --- 3. Find max RMS across lookahead window (predictive envelope) ---
+            var peekRms = blockRms
+            for i in 0..<lookaheadBlocks {
+                let rms = ringRms[i]
+                if rms > peekRms { peekRms = rms }
+            }
+
+            // --- 4. Envelope tracking using lookahead-max RMS ---
+            let envCoeff: Float = peekRms > envelopeLevel ? blockAttackCoeff : blockReleaseCoeff
+            envelopeLevel = envCoeff * envelopeLevel + (1.0 - envCoeff) * peekRms
+
+            // --- 5. Compute gain in dB ---
             let envelopeDb: Float = envelopeLevel > 1e-10 ? 20.0 * log10f(envelopeLevel) : -100.0
             let gainReductionDb = computeGainDb(inputDb: envelopeDb)
 
             // Smooth gain change
-            let gainCoeff: Float = blockRms > envelopeLevel ? blockAttackCoeff : blockReleaseCoeff
+            let gainCoeff: Float = peekRms > envelopeLevel ? blockAttackCoeff : blockReleaseCoeff
             smoothedGainDb = gainCoeff * smoothedGainDb + (1.0 - gainCoeff) * gainReductionDb
 
             // Convert to linear gain (compression + makeup)
             let totalGainLinear = expf(smoothedGainDb * dbToLinearScale) * makeupLinear
 
-            // --- 4. Apply gain to entire block using vDSP ---
+            // --- 6. Output the delayed block from ring buffer ---
+            if ringPrimed {
+                // Read the oldest slot (the one about to be overwritten next)
+                let readIndex = (ringWriteIndex + 1) % lookaheadBlocks
+                let readSlotPtr = ringBuf.advanced(by: readIndex * ringSlotSize)
+                memcpy(blockPtr, readSlotPtr, blockSamples * MemoryLayout<Float>.size)
+            }
+            // During priming: pass through the current block directly (no delay)
+            // blockPtr already contains the incoming audio, so no copy needed.
+
+            // --- 7. Apply gain to output block using vDSP ---
             var gain = totalGainLinear
             vDSP_vsmul(blockPtr, 1, &gain, blockPtr, 1, vDSP_Length(blockSamples))
 
-            // --- 5. Soft clip using vDSP clamping + tanh for overdriven samples ---
-            // First, find if any samples exceed [-1, 1] to avoid unnecessary work
+            // --- 8. Soft clip overdriven samples ---
             var blockMax: Float = 0.0
             vDSP_maxmgv(blockPtr, 1, &blockMax, vDSP_Length(blockSamples))
 
             if blockMax > 1.0 {
-                // Apply soft clipping only to samples that need it
                 for j in 0..<blockSamples {
                     let s = blockPtr[j]
                     if s > 1.0 {
@@ -186,11 +276,16 @@ struct LoudnessCompressor {
                         blockPtr[j] = -(1.0 - expf(s + 1.0))
                     }
                 }
-                // Re-measure peak after clipping
                 vDSP_maxmgv(blockPtr, 1, &blockMax, vDSP_Length(blockSamples))
             }
 
             if blockMax > outputPeak { outputPeak = blockMax }
+
+            // Advance ring buffer write position
+            ringWriteIndex = (ringWriteIndex + 1) % lookaheadBlocks
+            if !ringPrimed && ringWriteIndex == 0 {
+                ringPrimed = true
+            }
 
             framesProcessed += currentBlockSize
         }
@@ -206,5 +301,13 @@ struct LoudnessCompressor {
     mutating func reset() {
         envelopeLevel = 0.0
         smoothedGainDb = 0.0
+        ringWriteIndex = 0
+        ringPrimed = false
+        if let buf = ringBuffer {
+            memset(buf, 0, lookaheadBlocks * ringSlotSize * MemoryLayout<Float>.size)
+        }
+        if let rms = ringRMS {
+            memset(rms, 0, lookaheadBlocks * MemoryLayout<Float>.size)
+        }
     }
 }

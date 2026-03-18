@@ -195,6 +195,21 @@ struct L10n {
         }
     }
 
+    var meters: String {
+        switch language {
+        case .english: "Level Meters"
+        case .spanish: "Medidores"
+        case .french: "Indicateurs"
+        case .german: "Pegelanzeige"
+        case .portuguese: "Medidores"
+        case .italian: "Indicatori"
+        case .japanese: "レベルメーター"
+        case .chinese: "电平表"
+        case .korean: "레벨 미터"
+        case .russian: "Индикаторы"
+        }
+    }
+
     var input: String {
         switch language {
         case .english: "Input"
@@ -257,6 +272,21 @@ struct L10n {
         }
     }
 
+    var autoStartPermission: String {
+        switch language {
+        case .english: "Auto-start is enabled. Grant audio permission to start automatically."
+        case .spanish: "El inicio automático está activado. Concede permiso de audio para iniciar automáticamente."
+        case .french: "Le démarrage automatique est activé. Accordez la permission audio pour démarrer automatiquement."
+        case .german: "Automatischer Start ist aktiviert. Erteilen Sie die Audio-Berechtigung, um automatisch zu starten."
+        case .portuguese: "O início automático está ativado. Conceda permissão de áudio para iniciar automaticamente."
+        case .italian: "L'avvio automatico è attivato. Concedi il permesso audio per avviare automaticamente."
+        case .japanese: "自動開始が有効です。自動的に開始するにはオーディオの権限を許可してください。"
+        case .chinese: "自动启动已启用。请授予音频权限以自动启动。"
+        case .korean: "자동 시작이 활성화되어 있습니다. 자동으로 시작하려면 오디오 권한을 부여하세요."
+        case .russian: "Автозапуск включён. Предоставьте разрешение на аудио для автоматического запуска."
+        }
+    }
+
     var globalShortcut: String {
         switch language {
         case .english: "Global shortcut (⌃⌥E)"
@@ -304,7 +334,7 @@ struct L10n {
 
     // MARK: - Preset names
 
-    func presetName(_ preset: Preset) -> String {
+    func builtInPresetName(_ preset: BuiltInPreset) -> String {
         switch preset {
         case .light:
             switch language {
@@ -345,19 +375,111 @@ struct L10n {
             case .korean: "강함"
             case .russian: "Сильный"
             }
-        case .custom:
-            switch language {
-            case .english: "Custom"
-            case .spanish: "Personalizado"
-            case .french: "Personnalisé"
-            case .german: "Benutzerdefiniert"
-            case .portuguese: "Personalizado"
-            case .italian: "Personalizzato"
-            case .japanese: "カスタム"
-            case .chinese: "自定义"
-            case .korean: "사용자 정의"
-            case .russian: "Пользовательский"
-            }
+        }
+    }
+
+    var customModified: String {
+        switch language {
+        case .english: "Custom"
+        case .spanish: "Personalizado"
+        case .french: "Personnalisé"
+        case .german: "Benutzerdefiniert"
+        case .portuguese: "Personalizado"
+        case .italian: "Personalizzato"
+        case .japanese: "カスタム"
+        case .chinese: "自定义"
+        case .korean: "사용자 정의"
+        case .russian: "Пользовательский"
+        }
+    }
+
+    var savePreset: String {
+        switch language {
+        case .english: "Save Preset"
+        case .spanish: "Guardar ajuste"
+        case .french: "Enregistrer le préréglage"
+        case .german: "Voreinstellung speichern"
+        case .portuguese: "Salvar predefinição"
+        case .italian: "Salva preset"
+        case .japanese: "プリセットを保存"
+        case .chinese: "保存预设"
+        case .korean: "프리셋 저장"
+        case .russian: "Сохранить пресет"
+        }
+    }
+
+    var presetName_: String {
+        switch language {
+        case .english: "Preset Name"
+        case .spanish: "Nombre del ajuste"
+        case .french: "Nom du préréglage"
+        case .german: "Name der Voreinstellung"
+        case .portuguese: "Nome da predefinição"
+        case .italian: "Nome del preset"
+        case .japanese: "プリセット名"
+        case .chinese: "预设名称"
+        case .korean: "프리셋 이름"
+        case .russian: "Название пресета"
+        }
+    }
+
+    var save: String {
+        switch language {
+        case .english: "Save"
+        case .spanish: "Guardar"
+        case .french: "Enregistrer"
+        case .german: "Speichern"
+        case .portuguese: "Salvar"
+        case .italian: "Salva"
+        case .japanese: "保存"
+        case .chinese: "保存"
+        case .korean: "저장"
+        case .russian: "Сохранить"
+        }
+    }
+
+    var cancel: String {
+        switch language {
+        case .english: "Cancel"
+        case .spanish: "Cancelar"
+        case .french: "Annuler"
+        case .german: "Abbrechen"
+        case .portuguese: "Cancelar"
+        case .italian: "Annulla"
+        case .japanese: "キャンセル"
+        case .chinese: "取消"
+        case .korean: "취소"
+        case .russian: "Отмена"
+        }
+    }
+
+    var rename: String {
+        switch language {
+        case .english: "Rename"
+        case .spanish: "Renombrar"
+        case .french: "Renommer"
+        case .german: "Umbenennen"
+        case .portuguese: "Renomear"
+        case .italian: "Rinomina"
+        case .japanese: "名前を変更"
+        case .chinese: "重命名"
+        case .korean: "이름 변경"
+        case .russian: "Переименовать"
+        }
+    }
+
+    var delete: String {
+        switch language {
+        case .english: "Delete"
+        case .spanish: "Eliminar"
+        case .french: "Supprimer"
+        case .german: "Löschen"
+        case .portuguese: "Excluir"
+        case .italian: "Elimina"
+        case .japanese: "削除"
+        case .chinese: "删除"
+        case .korean: "삭제"
+        case .russian: "Удалить"
         }
     }
 

@@ -62,7 +62,9 @@ final class AudioEngine {
 
     // MARK: - Published State
 
-    var isRunning: Bool = false
+    var isRunning: Bool = false {
+        didSet { StatusBarController.shared.updateIcon() }
+    }
     var inputLevelDb: Float = -100.0
     var outputLevelDb: Float = -100.0
     var errorMessage: String?
@@ -92,24 +94,28 @@ final class AudioEngine {
         }
     }
 
-    // MARK: - Private Audio Objects
+    // MARK: - Private Audio Objects (excluded from observation tracking)
 
-    private var tapID: AudioObjectID = kAudioObjectUnknown
-    private var aggregateDeviceID: AudioObjectID = kAudioObjectUnknown
-    private var ioProcID: AudioDeviceIOProcID?
-    private var compressorStatePtr: UnsafeMutablePointer<CompressorState>?
-    private var meterTimer: Timer?
-    private var terminationObserver: Any?
-    private let ioQueue = DispatchQueue(label: "com.pols.ekual.ioqueue", qos: .userInteractive)
-    private var isRestarting = false
-    private var switchingStartTime: Date?
-    private var deviceChangeListenerBlock: AudioObjectPropertyListenerBlock?
-    private var deviceListListenerBlock: AudioObjectPropertyListenerBlock?
-    private var currentOutputDeviceID: AudioObjectID = kAudioObjectUnknown
+    @ObservationIgnored private var tapID: AudioObjectID = kAudioObjectUnknown
+    @ObservationIgnored private var aggregateDeviceID: AudioObjectID = kAudioObjectUnknown
+    @ObservationIgnored private var ioProcID: AudioDeviceIOProcID?
+    @ObservationIgnored private var compressorStatePtr: UnsafeMutablePointer<CompressorState>?
+    @ObservationIgnored private var meterTimer: Timer?
+    @ObservationIgnored private var terminationObserver: Any?
+    @ObservationIgnored private let ioQueue = DispatchQueue(label: "com.pols.ekual.ioqueue", qos: .userInteractive)
+    @ObservationIgnored private var isRestarting = false
+    @ObservationIgnored private var switchingStartTime: Date?
+    @ObservationIgnored private var deviceChangeListenerBlock: AudioObjectPropertyListenerBlock?
 
-    private let logger = Logger(subsystem: "com.pols.ekual", category: "AudioEngine")
-    private var sigTermSource: DispatchSourceSignal?
-    private var sigIntSource: DispatchSourceSignal?
+    /// Set to true once the engine has started successfully in this app session,
+    /// confirming macOS TCC permission is active for the current code signature.
+    var permissionConfirmedThisSession: Bool = false
+    @ObservationIgnored private var deviceListListenerBlock: AudioObjectPropertyListenerBlock?
+    @ObservationIgnored private var currentOutputDeviceID: AudioObjectID = kAudioObjectUnknown
+
+    @ObservationIgnored private let logger = Logger(subsystem: "com.pols.ekual", category: "AudioEngine")
+    @ObservationIgnored private var sigTermSource: DispatchSourceSignal?
+    @ObservationIgnored private var sigIntSource: DispatchSourceSignal?
 
     init() {
         let settings = SettingsManager.shared
@@ -152,7 +158,7 @@ final class AudioEngine {
     // MARK: - Start / Stop
 
     // Stored tap UUID so we can reuse the tap across device changes
-    private var tapDescUUID: String = ""
+    @ObservationIgnored private var tapDescUUID: String = ""
 
     func start() {
         guard !isRunning else { return }
@@ -212,6 +218,10 @@ final class AudioEngine {
             try setupDevicePipeline(realOutputDeviceID: realOutputDeviceID, outputUID: outputUID, outputSampleRate: outputSampleRate, statePtr: statePtr)
 
             isRunning = true
+            permissionConfirmedThisSession = true
+            if !SettingsManager.shared.hasGrantedAudioPermission {
+                SettingsManager.shared.hasGrantedAudioPermission = true
+            }
             logger.info("Audio engine started successfully on device \(realOutputDeviceID)")
 
             installDeviceChangeListener()
@@ -379,8 +389,15 @@ final class AudioEngine {
         targetLevelDb = SettingsManager.shared.targetLevelDb
     }
 
-    func applyPreset(_ preset: Preset) {
-        SettingsManager.shared.applyPreset(preset)
+    func applyBuiltInPreset(_ preset: BuiltInPreset) {
+        SettingsManager.shared.applyBuiltInPreset(preset)
+        releaseTime = SettingsManager.shared.releaseTime
+        makeupGainDb = SettingsManager.shared.makeupGainDb
+        targetLevelDb = SettingsManager.shared.targetLevelDb
+    }
+
+    func applyCustomPreset(_ preset: CustomPreset) {
+        SettingsManager.shared.applyCustomPreset(preset)
         releaseTime = SettingsManager.shared.releaseTime
         makeupGainDb = SettingsManager.shared.makeupGainDb
         targetLevelDb = SettingsManager.shared.targetLevelDb
@@ -452,7 +469,7 @@ final class AudioEngine {
     /// Call when the UI becomes visible to start meter updates.
     func startMetering() {
         guard isRunning, meterTimer == nil else { return }
-        meterTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
+        meterTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 10.0, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self, let statePtr = self.compressorStatePtr else { return }
                 self.inputLevelDb = statePtr.pointee.inputPeakDb
@@ -699,6 +716,7 @@ final class AudioEngine {
         }
 
         if let ptr = compressorStatePtr {
+            ptr.pointee.compressor.deallocate()
             ptr.deinitialize(count: 1)
             ptr.deallocate()
             compressorStatePtr = nil

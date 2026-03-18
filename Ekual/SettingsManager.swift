@@ -1,10 +1,11 @@
 import Foundation
 
-enum Preset: String, CaseIterable, Identifiable {
+// MARK: - Built-In Presets
+
+enum BuiltInPreset: String, CaseIterable, Identifiable {
     case light = "Light"
     case medium = "Medium"
     case heavy = "Heavy"
-    case custom = "Custom"
 
     var id: String { rawValue }
 
@@ -13,7 +14,6 @@ enum Preset: String, CaseIterable, Identifiable {
         case .light: 0.5
         case .medium: 1.0
         case .heavy: 2.0
-        case .custom: 1.0
         }
     }
 
@@ -22,7 +22,6 @@ enum Preset: String, CaseIterable, Identifiable {
         case .light: 6.0
         case .medium: 12.0
         case .heavy: 20.0
-        case .custom: 12.0
         }
     }
 
@@ -31,10 +30,41 @@ enum Preset: String, CaseIterable, Identifiable {
         case .light: -18.0
         case .medium: -24.0
         case .heavy: -36.0
-        case .custom: -24.0
         }
     }
 }
+
+// MARK: - Custom Presets
+
+struct CustomPreset: Codable, Identifiable, Equatable {
+    let id: UUID
+    var name: String
+    var releaseTime: Float
+    var makeupGainDb: Float
+    var targetLevelDb: Float
+
+    init(name: String, releaseTime: Float, makeupGainDb: Float, targetLevelDb: Float) {
+        self.id = UUID()
+        self.name = name
+        self.releaseTime = releaseTime
+        self.makeupGainDb = makeupGainDb
+        self.targetLevelDb = targetLevelDb
+    }
+}
+
+// MARK: - Preset Selection
+
+/// Represents which preset is currently active.
+enum PresetSelection: Hashable {
+    /// One of the built-in presets (Light, Medium, Heavy).
+    case builtIn(BuiltInPreset)
+    /// A user-saved custom preset, identified by UUID.
+    case custom(UUID)
+    /// Sliders have been manually adjusted and don't match any preset.
+    case modified
+}
+
+// MARK: - Settings Manager
 
 @Observable
 @MainActor
@@ -49,11 +79,17 @@ final class SettingsManager {
         static let makeupGainDb = "makeupGainDb"
         static let targetLevelDb = "targetLevelDb"
         static let autoStart = "autoStartProcessing"
-        static let selectedPreset = "selectedPreset"
         static let globalShortcutEnabled = "globalShortcutEnabled"
         static let appLanguage = "appLanguage"
         static let hasLaunchedBefore = "hasLaunchedBefore"
         static let preferredDeviceUID = "preferredDeviceUID"
+        static let hasGrantedAudioPermission = "hasGrantedAudioPermission"
+        // New keys for custom preset system
+        static let customPresets = "customPresets"
+        static let selectedPresetType = "selectedPresetType"
+        static let selectedPresetValue = "selectedPresetValue"
+        // Legacy key (migrated on first run)
+        static let selectedPreset = "selectedPreset"
     }
 
     // MARK: - Defaults
@@ -91,12 +127,6 @@ final class SettingsManager {
         }
     }
 
-    var selectedPreset: Preset {
-        didSet {
-            UserDefaults.standard.set(selectedPreset.rawValue, forKey: Keys.selectedPreset)
-        }
-    }
-
     var globalShortcutEnabled: Bool {
         didSet {
             UserDefaults.standard.set(globalShortcutEnabled, forKey: Keys.globalShortcutEnabled)
@@ -115,6 +145,12 @@ final class SettingsManager {
         }
     }
 
+    var hasGrantedAudioPermission: Bool {
+        didSet {
+            UserDefaults.standard.set(hasGrantedAudioPermission, forKey: Keys.hasGrantedAudioPermission)
+        }
+    }
+
     var preferredDeviceUID: String? {
         didSet {
             if let uid = preferredDeviceUID {
@@ -122,6 +158,22 @@ final class SettingsManager {
             } else {
                 UserDefaults.standard.removeObject(forKey: Keys.preferredDeviceUID)
             }
+        }
+    }
+
+    // MARK: - Preset Properties
+
+    var customPresets: [CustomPreset] {
+        didSet {
+            if let data = try? JSONEncoder().encode(customPresets) {
+                UserDefaults.standard.set(data, forKey: Keys.customPresets)
+            }
+        }
+    }
+
+    var presetSelection: PresetSelection {
+        didSet {
+            persistPresetSelection()
         }
     }
 
@@ -154,6 +206,7 @@ final class SettingsManager {
         self.autoStartProcessing = defaults.bool(forKey: Keys.autoStart)
         self.globalShortcutEnabled = defaults.bool(forKey: Keys.globalShortcutEnabled)
         self.hasLaunchedBefore = defaults.bool(forKey: Keys.hasLaunchedBefore)
+        self.hasGrantedAudioPermission = defaults.bool(forKey: Keys.hasGrantedAudioPermission)
         self.preferredDeviceUID = defaults.string(forKey: Keys.preferredDeviceUID)
 
         if let langRaw = defaults.string(forKey: Keys.appLanguage),
@@ -163,43 +216,156 @@ final class SettingsManager {
             self.appLanguage = AppLanguage.detect()
         }
 
-        if let presetRaw = defaults.string(forKey: Keys.selectedPreset),
-           let preset = Preset(rawValue: presetRaw) {
-            self.selectedPreset = preset
+        // Load custom presets from JSON
+        let loadedCustomPresets: [CustomPreset]
+        if let data = defaults.data(forKey: Keys.customPresets),
+           let presets = try? JSONDecoder().decode([CustomPreset].self, from: data) {
+            loadedCustomPresets = presets
         } else {
-            self.selectedPreset = .medium
+            loadedCustomPresets = []
+        }
+        self.customPresets = loadedCustomPresets
+
+        // Load preset selection (must come after customPresets)
+        if let type = defaults.string(forKey: Keys.selectedPresetType) {
+            self.presetSelection = Self.loadPresetSelection(type: type,
+                                                             value: defaults.string(forKey: Keys.selectedPresetValue),
+                                                             customPresets: loadedCustomPresets)
+        } else if let oldRaw = defaults.string(forKey: Keys.selectedPreset) {
+            // Migration from old Preset enum
+            if let builtIn = BuiltInPreset(rawValue: oldRaw) {
+                self.presetSelection = .builtIn(builtIn)
+            } else {
+                self.presetSelection = .modified
+            }
+            // Persist in new format and remove old key
+            persistPresetSelection()
+            defaults.removeObject(forKey: Keys.selectedPreset)
+        } else {
+            self.presetSelection = .builtIn(.medium)
+        }
+    }
+
+    // MARK: - Preset Selection Persistence
+
+    private static func loadPresetSelection(type: String, value: String?, customPresets: [CustomPreset]) -> PresetSelection {
+        switch type {
+        case "builtIn":
+            if let raw = value, let preset = BuiltInPreset(rawValue: raw) {
+                return .builtIn(preset)
+            }
+            return .builtIn(.medium)
+        case "custom":
+            if let uuidStr = value, let uuid = UUID(uuidString: uuidStr),
+               customPresets.contains(where: { $0.id == uuid }) {
+                return .custom(uuid)
+            }
+            return .modified
+        default:
+            return .modified
+        }
+    }
+
+    private func persistPresetSelection() {
+        switch presetSelection {
+        case .builtIn(let preset):
+            UserDefaults.standard.set("builtIn", forKey: Keys.selectedPresetType)
+            UserDefaults.standard.set(preset.rawValue, forKey: Keys.selectedPresetValue)
+        case .custom(let id):
+            UserDefaults.standard.set("custom", forKey: Keys.selectedPresetType)
+            UserDefaults.standard.set(id.uuidString, forKey: Keys.selectedPresetValue)
+        case .modified:
+            UserDefaults.standard.set("modified", forKey: Keys.selectedPresetType)
+            UserDefaults.standard.removeObject(forKey: Keys.selectedPresetValue)
         }
     }
 
     // MARK: - Preset Application
 
-    func applyPreset(_ preset: Preset) {
-        guard preset != .custom else { return }
-        selectedPreset = preset
+    func applyBuiltInPreset(_ preset: BuiltInPreset) {
+        presetSelection = .builtIn(preset)
         releaseTime = preset.releaseTime
         makeupGainDb = preset.makeupGainDb
         targetLevelDb = preset.targetLevelDb
     }
 
+    func applyCustomPreset(_ preset: CustomPreset) {
+        presetSelection = .custom(preset.id)
+        releaseTime = preset.releaseTime
+        makeupGainDb = preset.makeupGainDb
+        targetLevelDb = preset.targetLevelDb
+    }
+
+    // MARK: - Custom Preset CRUD
+
+    @discardableResult
+    func saveCurrentAsCustomPreset(name: String) -> CustomPreset {
+        let preset = CustomPreset(
+            name: name,
+            releaseTime: releaseTime,
+            makeupGainDb: makeupGainDb,
+            targetLevelDb: targetLevelDb
+        )
+        customPresets.append(preset)
+        presetSelection = .custom(preset.id)
+        return preset
+    }
+
+    func deleteCustomPreset(id: UUID) {
+        customPresets.removeAll { $0.id == id }
+        if case .custom(let selectedID) = presetSelection, selectedID == id {
+            presetSelection = .modified
+        }
+    }
+
+    func renameCustomPreset(id: UUID, newName: String) {
+        if let index = customPresets.firstIndex(where: { $0.id == id }) {
+            customPresets[index].name = newName
+        }
+    }
+
+    // MARK: - Defaults
+
     func resetToDefaults() {
-        applyPreset(.medium)
+        applyBuiltInPreset(.medium)
         preferredDeviceUID = nil
     }
 
+    // MARK: - Auto Preset Detection
+
     private func updatePresetIfNeeded() {
-        // Check if current values match any preset
-        for preset in Preset.allCases where preset != .custom {
+        // If we're currently on a custom preset that still matches, keep it
+        if case .custom(let id) = presetSelection,
+           let preset = customPresets.first(where: { $0.id == id }),
+           releaseTime == preset.releaseTime &&
+           makeupGainDb == preset.makeupGainDb &&
+           targetLevelDb == preset.targetLevelDb {
+            return
+        }
+        // Check if current values match any built-in preset
+        for preset in BuiltInPreset.allCases {
             if releaseTime == preset.releaseTime &&
                makeupGainDb == preset.makeupGainDb &&
                targetLevelDb == preset.targetLevelDb {
-                if selectedPreset != preset {
-                    selectedPreset = preset
+                if presetSelection != .builtIn(preset) {
+                    presetSelection = .builtIn(preset)
                 }
                 return
             }
         }
-        if selectedPreset != .custom {
-            selectedPreset = .custom
+        // Check if current values match any custom preset
+        for preset in customPresets {
+            if releaseTime == preset.releaseTime &&
+               makeupGainDb == preset.makeupGainDb &&
+               targetLevelDb == preset.targetLevelDb {
+                if presetSelection != .custom(preset.id) {
+                    presetSelection = .custom(preset.id)
+                }
+                return
+            }
+        }
+        if presetSelection != .modified {
+            presetSelection = .modified
         }
     }
 }

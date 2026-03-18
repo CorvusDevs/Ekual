@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		719234C02F693F9100360E58 /* distribute.sh in Resources */ = {isa = PBXBuildFile; fileRef = 719234BF2F693F9100360E58 /* distribute.sh */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		7161B0D12F68BD3300AABEA3 /* Ekual.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ekual.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		719234BF2F693F9100360E58 /* distribute.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = distribute.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -34,6 +39,7 @@
 			children = (
 				7161B0D32F68BD3300AABEA3 /* Ekual */,
 				7161B0D22F68BD3300AABEA3 /* Products */,
+				719234BF2F693F9100360E58 /* distribute.sh */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				719234C02F693F9100360E58 /* distribute.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

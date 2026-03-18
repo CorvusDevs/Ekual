@@ -8,6 +8,12 @@ struct ContentView: View {
     @State private var showInfoPopover = false
     @State private var showLanguagePicker = false
     @State private var switchingPulse = false
+    @State private var showMeters = false
+    @State private var showSavePresetDialog = false
+    @State private var showRenameDialog = false
+    @State private var newPresetName = ""
+    @State private var renameText = ""
+    @State private var presetToRenameID: UUID?
 
     private var l10n: L10n { settings.l10n }
 
@@ -44,41 +50,66 @@ struct ContentView: View {
 
                 Spacer()
 
-                // Power Button
-                Button {
-                    if engine.isRunning {
-                        engine.stop()
-                    } else {
-                        engine.start()
-                        engine.startMetering()
+                // Power Button (hidden until permission granted)
+                if settings.hasGrantedAudioPermission {
+                    Button {
+                        if engine.isRunning {
+                            engine.stop()
+                        } else {
+                            engine.start()
+                            engine.startMetering()
+                        }
+                    } label: {
+                        Image(systemName: "power")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundStyle(engine.isRunning ? .green : .secondary)
+                            .frame(width: 32, height: 32)
+                            .background(
+                                Circle()
+                                    .fill(engine.isRunning ? Color.green.opacity(0.15) : Color.secondary.opacity(0.1))
+                            )
                     }
-                } label: {
-                    Image(systemName: "power")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(engine.isRunning ? .green : .secondary)
-                        .frame(width: 32, height: 32)
-                        .background(
-                            Circle()
-                                .fill(engine.isRunning ? Color.green.opacity(0.15) : Color.secondary.opacity(0.1))
-                        )
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(engine.isRunning ? l10n.stopEkual : l10n.startEkual)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(engine.isRunning ? l10n.stopEkual : l10n.startEkual)
             }
 
-            // Status
-            statusView
+            // Permission prompt or status
+            if !settings.hasGrantedAudioPermission {
+                permissionPromptView
+            } else {
+                statusView
+            }
+
+            // Auto-start needs permission confirmation this session
+            if settings.autoStartProcessing &&
+               settings.hasGrantedAudioPermission &&
+               !engine.permissionConfirmedThisSession &&
+               !engine.isRunning {
+                autoStartPermissionBanner
+            }
 
             Divider()
 
-            // Level Meters — always present when active, zeroed during switching
+            // Level Meters — hidden behind a disclosure to avoid rendering cost
             if isEngineActive {
-                VStack(spacing: 8) {
-                    LevelMeterRow(label: l10n.input, levelDb: engine.isRunning ? engine.inputLevelDb : -100)
-                    LevelMeterRow(label: l10n.output, levelDb: engine.isRunning ? engine.outputLevelDb : -100)
+                DisclosureGroup(l10n.meters, isExpanded: $showMeters) {
+                    LevelMetersView(
+                        inputLabel: l10n.input,
+                        outputLabel: l10n.output,
+                        inputLevelDb: engine.isRunning ? engine.inputLevelDb : -100,
+                        outputLevelDb: engine.isRunning ? engine.outputLevelDb : -100
+                    )
+                    .opacity(engine.switchingToDevice != nil ? 0.4 : 1.0)
                 }
-                .opacity(engine.switchingToDevice != nil ? 0.4 : 1.0)
-                .animation(.easeInOut(duration: 0.3), value: engine.switchingToDevice != nil)
+                .font(.caption.bold())
+                .onChange(of: showMeters) { _, expanded in
+                    if expanded {
+                        engine.startMetering()
+                    } else {
+                        engine.stopMetering()
+                    }
+                }
             }
 
             // Output Device Picker
@@ -100,21 +131,95 @@ struct ContentView: View {
             }
 
             // Preset Picker
-            HStack {
-                Text(l10n.preset)
-                    .font(.caption.bold())
-                Spacer()
-                Picker("", selection: $settings.selectedPreset) {
-                    ForEach(Preset.allCases) { preset in
-                        Text(l10n.presetName(preset)).tag(preset)
+            VStack(spacing: 6) {
+                HStack {
+                    Text(l10n.preset)
+                        .font(.caption.bold())
+                    Spacer()
+                    Picker("", selection: presetSelectionBinding) {
+                        ForEach(BuiltInPreset.allCases) { preset in
+                            Text(l10n.builtInPresetName(preset)).tag(PresetSelection.builtIn(preset))
+                        }
+                        if !settings.customPresets.isEmpty {
+                            Divider()
+                            ForEach(settings.customPresets) { preset in
+                                Text(preset.name).tag(PresetSelection.custom(preset.id))
+                            }
+                        }
+                        if settings.presetSelection == .modified {
+                            Divider()
+                            Text(l10n.customModified).tag(PresetSelection.modified)
+                        }
                     }
+                    .labelsHidden()
+                    .fixedSize()
+                    .accessibilityLabel(l10n.preset)
                 }
-                .labelsHidden()
-                .fixedSize()
-                .accessibilityLabel(l10n.preset)
-                .onChange(of: settings.selectedPreset) { _, newPreset in
-                    if newPreset != .custom {
-                        engine.applyPreset(newPreset)
+
+                // Preset action buttons row
+                HStack(spacing: 8) {
+                    Button {
+                        dismissPresetNameEdit()
+                        newPresetName = ""
+                        showSavePresetDialog = true
+                    } label: {
+                        Label(l10n.savePreset, systemImage: "plus.circle")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+
+                    if case .custom(let id) = settings.presetSelection {
+                        Button {
+                            dismissPresetNameEdit()
+                            if let preset = settings.customPresets.first(where: { $0.id == id }) {
+                                presetToRenameID = preset.id
+                                renameText = preset.name
+                                showRenameDialog = true
+                            }
+                        } label: {
+                            Label(l10n.rename, systemImage: "pencil")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+
+                        Button {
+                            settings.deleteCustomPreset(id: id)
+                        } label: {
+                            Label(l10n.delete, systemImage: "trash")
+                                .font(.caption)
+                                .foregroundStyle(.red.opacity(0.8))
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    Spacer()
+                }
+
+                // Inline preset name editor (save or rename)
+                if showSavePresetDialog || showRenameDialog {
+                    HStack(spacing: 6) {
+                        TextField(l10n.presetName_, text: showRenameDialog ? $renameText : $newPresetName)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.caption)
+                            .onSubmit {
+                                commitPresetNameEdit()
+                            }
+
+                        Button(l10n.save) {
+                            commitPresetNameEdit()
+                        }
+                        .font(.caption)
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+
+                        Button(l10n.cancel) {
+                            dismissPresetNameEdit()
+                        }
+                        .font(.caption)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
                     }
                 }
             }
@@ -167,9 +272,16 @@ struct ContentView: View {
                         }
                     }
 
+                Toggle(l10n.autoStart, isOn: $settings.autoStartProcessing)
+                    .font(.caption)
+                    .toggleStyle(.checkbox)
+
                 Toggle(l10n.globalShortcut, isOn: $settings.globalShortcutEnabled)
                     .font(.caption)
                     .toggleStyle(.checkbox)
+                    .onChange(of: settings.globalShortcutEnabled) { _, _ in
+                        StatusBarController.shared.updateShortcutMonitor()
+                    }
             }
 
             HStack {
@@ -209,12 +321,46 @@ struct ContentView: View {
         .padding(20)
         .frame(width: 300)
         .fixedSize(horizontal: false, vertical: true)
-        .onAppear { engine.startMetering() }
-        .onDisappear { engine.stopMetering() }
-        .animation(.easeInOut(duration: 0.3), value: isEngineActive)
+        .onAppear {
+            // If auto-start is enabled and we've already confirmed TCC permission
+            // in this session (engine ran at least once), start silently.
+            if settings.autoStartProcessing &&
+               engine.permissionConfirmedThisSession &&
+               !engine.isRunning {
+                engine.start()
+            }
+        }
+        .onDisappear {
+            showMeters = false
+            engine.stopMetering()
+        }
     }
 
     // MARK: - Status View
+
+    @ViewBuilder
+    private var permissionPromptView: some View {
+        VStack(spacing: 8) {
+            Text(l10n.permissionExplanation)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+
+            Button {
+                engine.start()
+                if engine.isRunning {
+                    settings.hasGrantedAudioPermission = true
+                }
+            } label: {
+                Label(l10n.grantPermission, systemImage: "speaker.wave.3.fill")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.green)
+            .controlSize(.regular)
+        }
+    }
 
     @ViewBuilder
     private var statusView: some View {
@@ -281,6 +427,23 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
+    private var autoStartPermissionBanner: some View {
+        VStack(spacing: 6) {
+            Text(l10n.autoStartPermission)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+
+            GlowingPermissionButton(l10n: l10n) {
+                engine.start()
+                if engine.isRunning {
+                    engine.startMetering()
+                }
+            }
+        }
+    }
+
     // MARK: - Bindings
 
     private var selectedDeviceBinding: Binding<String?> {
@@ -297,6 +460,49 @@ struct ContentView: View {
         )
     }
 
+    private func commitPresetNameEdit() {
+        if showSavePresetDialog {
+            let name = newPresetName.trimmingCharacters(in: .whitespaces)
+            guard !name.isEmpty else { return }
+            settings.saveCurrentAsCustomPreset(name: name)
+            newPresetName = ""
+            showSavePresetDialog = false
+        } else if showRenameDialog {
+            let name = renameText.trimmingCharacters(in: .whitespaces)
+            guard !name.isEmpty, let id = presetToRenameID else { return }
+            settings.renameCustomPreset(id: id, newName: name)
+            presetToRenameID = nil
+            renameText = ""
+            showRenameDialog = false
+        }
+    }
+
+    private func dismissPresetNameEdit() {
+        newPresetName = ""
+        renameText = ""
+        presetToRenameID = nil
+        showSavePresetDialog = false
+        showRenameDialog = false
+    }
+
+    private var presetSelectionBinding: Binding<PresetSelection> {
+        Binding<PresetSelection>(
+            get: { settings.presetSelection },
+            set: { newSelection in
+                switch newSelection {
+                case .builtIn(let preset):
+                    engine.applyBuiltInPreset(preset)
+                case .custom(let id):
+                    if let preset = settings.customPresets.first(where: { $0.id == id }) {
+                        engine.applyCustomPreset(preset)
+                    }
+                case .modified:
+                    break
+                }
+            }
+        )
+    }
+
     private var releaseTimeLabel: String {
         let ms = Int(engine.releaseTime * 1000)
         if ms < 1000 {
@@ -306,6 +512,39 @@ struct ContentView: View {
         }
     }
 
+}
+
+// MARK: - Glowing Permission Button
+
+/// Isolated view so the repeating glow animation doesn't leak to parent.
+private struct GlowingPermissionButton: View {
+    let l10n: L10n
+    let action: () -> Void
+    @State private var glowing = false
+
+    var body: some View {
+        Button(action: action) {
+            Label(l10n.grantPermission, systemImage: "speaker.wave.3.fill")
+                .font(.caption.bold())
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 5)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(
+                            LinearGradient(
+                                colors: [.red, .orange],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+        .shadow(color: .red.opacity(glowing ? 0.6 : 0.15), radius: glowing ? 10 : 4)
+        .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: glowing)
+        .onAppear { glowing = true }
+    }
 }
 
 // MARK: - Language Picker
@@ -405,7 +644,23 @@ struct SliderRow: View {
     }
 }
 
-// MARK: - Level Meter
+// MARK: - Level Meters (isolated view to avoid re-evaluating ContentView.body)
+
+/// Pure value-driven meter view — no @Observable engine reference,
+/// so it only re-renders when the passed-in Float values actually change.
+struct LevelMetersView: View, Equatable {
+    let inputLabel: String
+    let outputLabel: String
+    let inputLevelDb: Float
+    let outputLevelDb: Float
+
+    var body: some View {
+        VStack(spacing: 8) {
+            LevelMeterRow(label: inputLabel, levelDb: inputLevelDb)
+            LevelMeterRow(label: outputLabel, levelDb: outputLevelDb)
+        }
+    }
+}
 
 struct LevelMeterRow: View {
     let label: String
@@ -417,32 +672,30 @@ struct LevelMeterRow: View {
                 .font(.caption)
                 .frame(width: 44, alignment: .trailing)
 
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    // Background
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(Color.secondary.opacity(0.15))
+            // Meter bar — uses a simple proportional frame instead of GeometryReader
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.secondary.opacity(0.15))
 
-                    // Level bar
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(meterColor)
-                        .frame(width: max(0, meterFraction * geo.size.width))
-                }
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(meterColor)
+                    .frame(width: max(0, meterFraction * 150))
+                    .animation(.linear(duration: 0.1), value: meterFraction)
             }
-            .frame(height: 8)
+            .frame(width: 150, height: 8)
 
-            Text(String(format: "%3.0f dB", levelDb))
+            Text(dbText)
                 .font(.caption.monospacedDigit())
                 .frame(width: 48, alignment: .trailing)
                 .foregroundStyle(.secondary)
+                .animation(nil, value: levelDb)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label)
-        .accessibilityValue(String(format: "%.0f dB", levelDb))
+        .accessibilityValue(dbText)
     }
 
     private var meterFraction: CGFloat {
-        // Map -60 dB to 0 dB → 0.0 to 1.0
         let clamped = max(-60, min(0, CGFloat(levelDb)))
         return (clamped + 60) / 60
     }
@@ -455,6 +708,10 @@ struct LevelMeterRow: View {
         } else {
             return .green
         }
+    }
+
+    private var dbText: String {
+        String(format: "%3.0f dB", levelDb)
     }
 }
 
