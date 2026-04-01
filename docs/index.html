@@ -291,7 +291,7 @@
         <img src="icon.png" alt="Ekual icon" class="hero-icon">
         <h1>Ekual</h1>
         <p class="tagline">Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.</p>
-        <a href="https://buy.paddle.com/product/pri_01kn3hw3263q8h0yavh9yd95kd" class="cta-button">Buy Ekual</a>
+        <button class="cta-button" onclick="openCheckout()">Buy Ekual</button>
         <p class="price-note">One-time purchase. No subscription.</p>
     </section>
 
@@ -389,5 +389,18 @@
         </div>
     </footer>
 
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <script>
+        Paddle.Initialize({ token: "live_56066aaf7cbe507b874f560dbcd" });
+
+        function openCheckout() {
+            Paddle.Checkout.open({
+                items: [{ priceId: "pri_01kn3hw3263q8h0yavh9yd95kd", quantity: 1 }],
+                settings: {
+                    successUrl: "https://corvusdevs.github.io/Ekual/success?_ptxn={transaction_id}",
+                },
+            });
+        }
+    </script>
 </body>
 </html>
