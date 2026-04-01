@@ -75,17 +75,25 @@ private enum FirstLaunchObserver {
 
                 WelcomeWindowController.shared.showIfFirstLaunch()
 
-                // If auto-start is enabled but permission needs re-confirmation
-                // (e.g. debug build with reset TCC), open the popover
-                // so the user sees the permission banner immediately.
-                // Delay slightly so the status item is fully laid out by AppKit.
+                // If auto-start is enabled and permission was previously granted,
+                // attempt to start the engine automatically. If TCC permission
+                // is still valid, it will start silently. If it was revoked
+                // (e.g. debug build with reset TCC), the engine will fail and
+                // we open the popover so the user sees the permission banner.
                 let settings = SettingsManager.shared
                 if settings.autoStartProcessing &&
                    settings.hasGrantedAudioPermission &&
-                   settings.hasLaunchedBefore &&
-                   !AudioEngine.shared.permissionConfirmedThisSession {
+                   settings.hasLaunchedBefore {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        StatusBarController.shared.openPopover()
+                        let engine = AudioEngine.shared
+                        if !engine.isRunning {
+                            engine.start()
+                        }
+                        // If start failed (TCC revoked), show the popover
+                        // so the user can re-grant permission.
+                        if !engine.isRunning {
+                            StatusBarController.shared.openPopover()
+                        }
                     }
                 }
             }
@@ -152,7 +160,8 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
     }
 
     func openPopover() {
-        guard let button = statusItem.button else { return }
+        guard let button = statusItem.button,
+              button.window != nil else { return }
         NSApp.activate()
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         // Ensure the popover's window is key so the UI appears active
@@ -277,6 +286,11 @@ struct EkualApp: App {
     @State private var settings = SettingsManager.shared
 
     init() {
+        // Disable macOS window state restoration — a menu bar app should
+        // never try to re-open its popover from a previous session (it
+        // would appear detached at the bottom-left corner of the screen).
+        UserDefaults.standard.set(false, forKey: "NSQuitAlwaysKeepsWindows")
+
         FirstLaunchObserver.install()
     }
 

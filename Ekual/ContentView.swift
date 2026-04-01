@@ -83,10 +83,13 @@ struct ContentView: View {
             }
 
             // Auto-start needs permission confirmation this session
+            // (only show if the engine hasn't tried and failed — avoid
+            // duplicating the error + try-again that statusView already shows)
             if settings.autoStartProcessing &&
                settings.hasGrantedAudioPermission &&
                !engine.permissionConfirmedThisSession &&
-               !engine.isRunning {
+               !engine.isRunning &&
+               engine.errorMessage == nil {
                 autoStartPermissionBanner
             }
 
