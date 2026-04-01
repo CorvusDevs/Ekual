@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekual — Loudness Equalization for macOS</title>
+    <meta name="description" content="Ekual automatically balances audio volume across all your Mac apps in real-time. No more reaching for the volume knob.">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --surface: #141418;
+            --surface-2: #1c1c22;
+            --border: #2a2a32;
+            --text: #e8e8ed;
+            --text-secondary: #8e8e93;
+            --accent: #30d158;
+            --accent-dim: #30d15820;
+            --accent-glow: #30d15840;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 24px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-icon {
+            width: 128px;
+            height: 128px;
+            border-radius: 28px;
+            margin-bottom: 32px;
+            position: relative;
+            filter: drop-shadow(0 8px 32px rgba(48, 209, 88, 0.2));
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, #8e8e93 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .tagline {
+            font-size: 22px;
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin: 0 auto 40px;
+            font-weight: 400;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: var(--accent);
+            color: #000;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(48, 209, 88, 0.3);
+        }
+
+        .price-note {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Features */
+        .features {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            transition: border-color 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-dim);
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* How it works */
+        .section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        .section h2 {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: -0.5px;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .step-text h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .step-text p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Requirements */
+        .requirements {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .requirements p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-brand p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .footer-col h4 {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 14px;
+            color: var(--text);
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Refund section */
+        .refund-banner {
+            text-align: center;
+            padding: 32px 24px;
+            margin: 0 auto;
+            max-width: 680px;
+        }
+
+        .refund-banner p {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .refund-banner strong {
+            color: var(--text);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 36px; }
+            .hero .tagline { font-size: 18px; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <section class="hero">
+        <img src="icon.png" alt="Ekual icon" class="hero-icon">
+        <h1>Ekual</h1>
+        <p class="tagline">Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.</p>
+        <a href="https://buy.paddle.com/product/pri_01kn3hw3263q8h0yavh9yd95kd" class="cta-button">Buy Ekual</a>
+        <p class="price-note">One-time purchase. No subscription.</p>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature-card">
+            <span class="feature-icon">🎧</span>
+            <h3>Real-Time Processing</h3>
+            <p>Equalizes volume across all apps instantly. Movies, music, calls, games — all balanced automatically.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">⚡</span>
+            <h3>Near-Zero CPU</h3>
+            <p>Optimized with vDSP vectorization. Runs at less than 1% CPU so you never notice it's there.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🎛️</span>
+            <h3>Customizable Presets</h3>
+            <p>Light, Medium, Heavy — or create your own. Fine-tune release time, makeup gain, and target level.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🚫</span>
+            <h3>App Exclusions</h3>
+            <p>Exclude specific apps from processing. Keep your music player untouched while equalizing everything else.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">⌨️</span>
+            <h3>Global Shortcut</h3>
+            <p>Toggle equalization on and off with a customizable keyboard shortcut from anywhere.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🔒</span>
+            <h3>Fully Private</h3>
+            <p>All audio processing happens locally on your Mac. No data leaves your device. Ever.</p>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section">
+        <h2>How it works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">
+                    <h3>Install and launch</h3>
+                    <p>Ekual lives in your menu bar. Grant audio permission once and you're ready to go.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">
+                    <h3>Pick a preset</h3>
+                    <p>Choose Light, Medium, or Heavy equalization — or dial in your own settings with the sliders.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">
+                    <h3>Forget about it</h3>
+                    <p>Ekual starts with your Mac and works silently in the background. Consistent volume, zero effort.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Requirements -->
+    <section class="requirements">
+        <p>Requires macOS 14.2 or later.</p>
+    </section>
+
+    <!-- Refund -->
+    <section class="refund-banner">
+        <p><strong>14-day money-back guarantee.</strong> Not satisfied? Contact us within 14 days for a full refund, no questions asked.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <p><strong>Ekual</strong> is made by CorvusDevs.<br>
+                Loudness equalization for macOS — the feature Apple forgot.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <a href="terms">Terms of Service</a>
+                <a href="privacy">Privacy Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 CorvusDevs. All rights reserved. Payments processed by <a href="https://paddle.com" style="color: var(--text-secondary); text-decoration: underline;">Paddle</a>.
+        </div>
+    </footer>
+
+</body>
+</html>
