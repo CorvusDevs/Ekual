@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Complete — Ekual</title>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --surface: #141418;
+            --border: #2a2a32;
+            --text: #e8e8ed;
+            --text-secondary: #8e8e93;
+            --accent: #30d158;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 520px;
+            width: 100%;
+            padding: 80px 24px;
+            text-align: center;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 18px;
+            margin-bottom: 24px;
+            filter: drop-shadow(0 4px 16px rgba(48, 209, 88, 0.15));
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+        .key-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            text-align: left;
+            margin-bottom: 16px;
+            user-select: all;
+            cursor: text;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .copy-btn {
+            display: inline-block;
+            padding: 12px 32px;
+            background: var(--accent);
+            color: #000;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 32px;
+        }
+        .copy-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(48, 209, 88, 0.3);
+        }
+        .steps {
+            text-align: left;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+        .steps h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        .steps ol {
+            padding-left: 20px;
+        }
+        .steps li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .email-note {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .loading {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-top: 40px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error {
+            color: #ff453a;
+            font-size: 15px;
+            margin-top: 40px;
+        }
+        .back-link {
+            display: inline-block;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="icon.png" alt="Ekual" class="icon">
+        <h1>Thank you for purchasing Ekual!</h1>
+        <p class="subtitle">Your license key is ready.</p>
+
+        <div id="loading">
+            <div class="spinner"></div>
+            <p class="loading">Generating your license key...</p>
+        </div>
+
+        <div id="result" class="hidden">
+            <div class="key-box" id="keyBox"></div>
+            <button class="copy-btn" id="copyBtn" onclick="copyKey()">Copy to Clipboard</button>
+
+            <div class="steps">
+                <h3>To activate Ekual:</h3>
+                <ol>
+                    <li>Open Ekual from the menu bar</li>
+                    <li>Paste the key into the license field</li>
+                    <li>Click <strong>Activate</strong></li>
+                </ol>
+            </div>
+            <p class="email-note">A copy has also been sent to your email.</p>
+        </div>
+
+        <div id="error" class="hidden">
+            <p class="error">Could not retrieve your license key right now. Please check your email — your key will arrive shortly.</p>
+        </div>
+
+        <a href="./" class="back-link">&larr; Back to Ekual</a>
+    </div>
+
+    <script>
+        const WORKER_URL = "https://ekual-license.soyelale.workers.dev";
+        let retries = 0;
+
+        async function fetchLicense() {
+            const params = new URLSearchParams(window.location.search);
+            const txnId = params.get("_ptxn") || params.get("transaction_id");
+
+            if (!txnId) {
+                document.getElementById("loading").classList.add("hidden");
+                document.getElementById("error").classList.remove("hidden");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${WORKER_URL}/generate`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ transaction_id: txnId }),
+                });
+
+                if (!res.ok) throw new Error("not ready");
+                const data = await res.json();
+
+                document.getElementById("keyBox").textContent = data.license_key;
+                document.getElementById("loading").classList.add("hidden");
+                document.getElementById("result").classList.remove("hidden");
+            } catch (e) {
+                if (retries < 3) {
+                    retries++;
+                    setTimeout(fetchLicense, 2000);
+                } else {
+                    document.getElementById("loading").classList.add("hidden");
+                    document.getElementById("error").classList.remove("hidden");
+                }
+            }
+        }
+
+        function copyKey() {
+            const key = document.getElementById("keyBox").textContent;
+            navigator.clipboard.writeText(key);
+            const btn = document.getElementById("copyBtn");
+            btn.textContent = "Copied!";
+            setTimeout(() => { btn.textContent = "Copy to Clipboard"; }, 2000);
+        }
+
+        setTimeout(fetchLicense, 1500);
+    </script>
+</body>
+</html>
