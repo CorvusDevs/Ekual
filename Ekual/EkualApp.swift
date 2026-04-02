@@ -81,7 +81,8 @@ private enum FirstLaunchObserver {
                 // (e.g. debug build with reset TCC), the engine will fail and
                 // we open the popover so the user sees the permission banner.
                 let settings = SettingsManager.shared
-                if settings.autoStartProcessing &&
+                if LicenseManager.shared.isLicensed &&
+                   settings.autoStartProcessing &&
                    settings.hasGrantedAudioPermission &&
                    settings.hasLaunchedBefore {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -236,6 +237,7 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
         if engine.isRunning {
             engine.stop()
         } else {
+            guard LicenseManager.shared.isLicensed else { return }
             engine.start()
         }
         updateIcon()
@@ -272,6 +274,7 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
                     if engine.isRunning {
                         engine.stop()
                     } else {
+                        guard LicenseManager.shared.isLicensed else { return }
                         engine.start()
                     }
                     StatusBarController.shared.updateIcon()

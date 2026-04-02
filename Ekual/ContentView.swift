@@ -16,6 +16,9 @@ struct ContentView: View {
     @State private var presetToRenameID: UUID?
     @State private var showExcludedApps = false
     @State private var runningApps: [RunningAudioApp] = []
+    @State private var license = LicenseManager.shared
+    @State private var licenseKeyInput = ""
+    @State private var licenseError = false
 
     private var l10n: L10n { settings.l10n }
 
@@ -52,8 +55,8 @@ struct ContentView: View {
 
                 Spacer()
 
-                // Power Button (hidden until permission granted)
-                if settings.hasGrantedAudioPermission {
+                // Power Button (hidden until licensed and permission granted)
+                if license.isLicensed && settings.hasGrantedAudioPermission {
                     Button {
                         if engine.isRunning {
                             engine.stop()
@@ -75,25 +78,28 @@ struct ContentView: View {
                 }
             }
 
-            // Permission prompt or status
-            if !settings.hasGrantedAudioPermission {
-                permissionPromptView
+            if !license.isLicensed {
+                activationView
             } else {
-                statusView
-            }
+                // Permission prompt or status
+                if !settings.hasGrantedAudioPermission {
+                    permissionPromptView
+                } else {
+                    statusView
+                }
 
-            // Auto-start needs permission confirmation this session
-            // (only show if the engine hasn't tried and failed — avoid
-            // duplicating the error + try-again that statusView already shows)
-            if settings.autoStartProcessing &&
-               settings.hasGrantedAudioPermission &&
-               !engine.permissionConfirmedThisSession &&
-               !engine.isRunning &&
-               engine.errorMessage == nil {
-                autoStartPermissionBanner
-            }
+                // Auto-start needs permission confirmation this session
+                // (only show if the engine hasn't tried and failed — avoid
+                // duplicating the error + try-again that statusView already shows)
+                if settings.autoStartProcessing &&
+                   settings.hasGrantedAudioPermission &&
+                   !engine.permissionConfirmedThisSession &&
+                   !engine.isRunning &&
+                   engine.errorMessage == nil {
+                    autoStartPermissionBanner
+                }
 
-            Divider()
+                Divider()
 
             // Level Meters — hidden behind a disclosure to avoid rendering cost
             if isEngineActive {
@@ -368,13 +374,17 @@ struct ContentView: View {
                 }
             }
 
+            } // end license.isLicensed else block
+
             HStack {
-                Button(l10n.resetToDefaults) {
-                    engine.resetToDefaults()
+                if license.isLicensed {
+                    Button(l10n.resetToDefaults) {
+                        engine.resetToDefaults()
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .buttonStyle(.plain)
                 }
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .buttonStyle(.plain)
 
                 Button {
                     showLanguagePicker.toggle()
@@ -393,6 +403,16 @@ struct ContentView: View {
 
                 Spacer()
 
+                if license.isLicensed {
+                    Button(l10n.deactivateLicense) {
+                        license.deactivate()
+                        engine.stop()
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .buttonStyle(.plain)
+                }
+
                 Button(l10n.quit) {
                     engine.stop()
                     NSApplication.shared.terminate(nil)
@@ -408,7 +428,8 @@ struct ContentView: View {
         .onAppear {
             // If auto-start is enabled and we've already confirmed TCC permission
             // in this session (engine ran at least once), start silently.
-            if settings.autoStartProcessing &&
+            if license.isLicensed &&
+               settings.autoStartProcessing &&
                engine.permissionConfirmedThisSession &&
                !engine.isRunning {
                 engine.start()
@@ -421,6 +442,56 @@ struct ContentView: View {
     }
 
     // MARK: - Status View
+
+    @ViewBuilder
+    private var activationView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "key.fill")
+                .font(.system(size: 28))
+                .foregroundStyle(.secondary)
+
+            Text(l10n.licenseRequired)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+
+            TextField(l10n.licenseKeyPlaceholder, text: $licenseKeyInput)
+                .textFieldStyle(.roundedBorder)
+                .font(.caption.monospaced())
+                .onSubmit { attemptActivation() }
+
+            if licenseError {
+                Text(l10n.invalidLicenseKey)
+                    .font(.caption2)
+                    .foregroundStyle(.red)
+            }
+
+            Button {
+                attemptActivation()
+            } label: {
+                Text(l10n.activate)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.green)
+            .controlSize(.regular)
+            .disabled(licenseKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+            Link(l10n.buyEkual, destination: URL(string: "https://corvusdevs.github.io/Ekual/")!)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func attemptActivation() {
+        licenseError = false
+        if license.activate(key: licenseKeyInput) {
+            licenseKeyInput = ""
+        } else {
+            licenseError = true
+        }
+    }
 
     @ViewBuilder
     private var permissionPromptView: some View {

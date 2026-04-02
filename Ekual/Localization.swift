@@ -684,6 +684,98 @@ struct L10n {
         }
     }
 
+    // MARK: - License
+
+    var licenseRequired: String {
+        switch language {
+        case .english: "Enter your license key to use Ekual."
+        case .spanish: "Ingresa tu clave de licencia para usar Ekual."
+        case .french: "Entrez votre clé de licence pour utiliser Ekual."
+        case .german: "Geben Sie Ihren Lizenzschlüssel ein, um Ekual zu verwenden."
+        case .portuguese: "Insira sua chave de licença para usar o Ekual."
+        case .italian: "Inserisci la tua chiave di licenza per usare Ekual."
+        case .japanese: "Ekualを使用するにはライセンスキーを入力してください。"
+        case .chinese: "请输入您的许可证密钥以使用Ekual。"
+        case .korean: "Ekual을 사용하려면 라이선스 키를 입력하세요."
+        case .russian: "Введите лицензионный ключ для использования Ekual."
+        }
+    }
+
+    var licenseKeyPlaceholder: String {
+        switch language {
+        case .english: "License Key"
+        case .spanish: "Clave de Licencia"
+        case .french: "Clé de Licence"
+        case .german: "Lizenzschlüssel"
+        case .portuguese: "Chave de Licença"
+        case .italian: "Chiave di Licenza"
+        case .japanese: "ライセンスキー"
+        case .chinese: "许可证密钥"
+        case .korean: "라이선스 키"
+        case .russian: "Лицензионный ключ"
+        }
+    }
+
+    var invalidLicenseKey: String {
+        switch language {
+        case .english: "Invalid license key. Please check and try again."
+        case .spanish: "Clave de licencia inválida. Verifica e intenta de nuevo."
+        case .french: "Clé de licence invalide. Vérifiez et réessayez."
+        case .german: "Ungültiger Lizenzschlüssel. Bitte überprüfen und erneut versuchen."
+        case .portuguese: "Chave de licença inválida. Verifique e tente novamente."
+        case .italian: "Chiave di licenza non valida. Controlla e riprova."
+        case .japanese: "無効なライセンスキーです。確認してもう一度お試しください。"
+        case .chinese: "无效的许可证密钥。请检查后重试。"
+        case .korean: "잘못된 라이선스 키입니다. 확인 후 다시 시도하세요."
+        case .russian: "Недействительный лицензионный ключ. Проверьте и попробуйте снова."
+        }
+    }
+
+    var activate: String {
+        switch language {
+        case .english: "Activate"
+        case .spanish: "Activar"
+        case .french: "Activer"
+        case .german: "Aktivieren"
+        case .portuguese: "Ativar"
+        case .italian: "Attiva"
+        case .japanese: "アクティベート"
+        case .chinese: "激活"
+        case .korean: "활성화"
+        case .russian: "Активировать"
+        }
+    }
+
+    var buyEkual: String {
+        switch language {
+        case .english: "Buy Ekual"
+        case .spanish: "Comprar Ekual"
+        case .french: "Acheter Ekual"
+        case .german: "Ekual kaufen"
+        case .portuguese: "Comprar Ekual"
+        case .italian: "Acquista Ekual"
+        case .japanese: "Ekualを購入"
+        case .chinese: "购买Ekual"
+        case .korean: "Ekual 구매"
+        case .russian: "Купить Ekual"
+        }
+    }
+
+    var deactivateLicense: String {
+        switch language {
+        case .english: "Deactivate License"
+        case .spanish: "Desactivar Licencia"
+        case .french: "Désactiver la Licence"
+        case .german: "Lizenz deaktivieren"
+        case .portuguese: "Desativar Licença"
+        case .italian: "Disattiva Licenza"
+        case .japanese: "ライセンスを無効化"
+        case .chinese: "停用许可证"
+        case .korean: "라이선스 비활성화"
+        case .russian: "Деактивировать лицензию"
+        }
+    }
+
     var menuBarHint: String {
         switch language {
         case .english: "Ekual lives in your menu bar.\nClick the waveform icon to access controls anytime."
