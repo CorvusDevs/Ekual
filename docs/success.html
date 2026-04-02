@@ -197,7 +197,7 @@
         </div>
 
         <div id="error" class="hidden">
-            <p class="error">Could not retrieve your license key right now. Please check your email — your key will arrive shortly.</p>
+            <p class="error" id="errorMsg">Could not retrieve your license key. Please contact <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a> for help.</p>
         </div>
 
         <a href="./" class="back-link">&larr; Back to Ekual</a>
@@ -206,6 +206,7 @@
     <script>
         const WORKER_URL = "https://ekual-license.soyelale.workers.dev";
         let retries = 0;
+        let lastError = "";
 
         async function fetchLicense() {
             const params = new URLSearchParams(window.location.search);
@@ -224,19 +225,23 @@
                     body: JSON.stringify({ transaction_id: txnId }),
                 });
 
-                if (!res.ok) throw new Error("not ready");
                 const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "not ready");
 
                 document.getElementById("keyBox").textContent = data.license_key;
                 document.getElementById("loading").classList.add("hidden");
                 document.getElementById("result").classList.remove("hidden");
             } catch (e) {
+                lastError = e.message;
                 if (retries < 6) {
                     retries++;
                     setTimeout(fetchLicense, 3000);
                 } else {
                     document.getElementById("loading").classList.add("hidden");
                     document.getElementById("error").classList.remove("hidden");
+                    if (lastError) {
+                        document.getElementById("errorMsg").textContent = lastError;
+                    }
                 }
             }
         }
