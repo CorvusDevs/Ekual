@@ -1,6 +1,13 @@
+# Source code (private, not published)
+Ekual/
+Ekual.xcodeproj/
+distribute.sh
+scripts/
+worker/
+
+# Xcode
 build/
 *.xcuserstate
 xcuserdata/
 DerivedData/
 .DS_Store
-scripts/.keys/
