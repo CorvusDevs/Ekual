@@ -228,9 +228,9 @@
                 document.getElementById("loading").classList.add("hidden");
                 document.getElementById("result").classList.remove("hidden");
             } catch (e) {
-                if (retries < 3) {
+                if (retries < 6) {
                     retries++;
-                    setTimeout(fetchLicense, 2000);
+                    setTimeout(fetchLicense, 3000);
                 } else {
                     document.getElementById("loading").classList.add("hidden");
                     document.getElementById("error").classList.remove("hidden");
