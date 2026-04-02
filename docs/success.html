@@ -28,28 +28,45 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 520px;
+            max-width: 560px;
             width: 100%;
-            padding: 80px 24px;
+            padding: 60px 24px;
             text-align: center;
         }
+        .icon-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 32px;
+        }
         .icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 18px;
-            margin-bottom: 24px;
-            filter: drop-shadow(0 4px 16px rgba(48, 209, 88, 0.15));
+            width: 160px;
+            height: 160px;
+            border-radius: 36px;
+            position: relative;
+            z-index: 1;
+        }
+        .icon-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(48, 209, 88, 0.25) 0%, rgba(48, 209, 88, 0.08) 50%, transparent 70%);
+            filter: blur(30px);
+            z-index: 0;
         }
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             margin-bottom: 8px;
             letter-spacing: -0.5px;
         }
         .subtitle {
-            font-size: 15px;
+            font-size: 16px;
             color: var(--text-secondary);
-            margin-bottom: 32px;
+            margin-bottom: 36px;
         }
         .key-box {
             background: var(--surface);
@@ -57,33 +74,56 @@
             border-radius: 12px;
             padding: 16px 20px;
             font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
-            font-size: 13px;
+            font-size: 12.5px;
             word-break: break-all;
             text-align: left;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             user-select: all;
             cursor: text;
             color: var(--text);
             line-height: 1.6;
         }
-        .copy-btn {
-            display: inline-block;
-            padding: 12px 32px;
-            background: var(--accent);
-            color: #000;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .btn-row {
+            display: flex;
+            gap: 12px;
             margin-bottom: 32px;
         }
-        .copy-btn:hover {
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .btn-copy {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-copy:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(48, 209, 88, 0.1);
+        }
+        .btn-download {
+            background: var(--accent);
+            color: #000;
+        }
+        .btn-download:hover {
             filter: brightness(1.1);
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(48, 209, 88, 0.3);
+            box-shadow: 0 4px 20px rgba(48, 209, 88, 0.35);
         }
+        .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
         .steps {
             text-align: left;
             background: var(--surface);
@@ -106,32 +146,15 @@
             color: var(--text-secondary);
             margin-bottom: 6px;
         }
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 14px 32px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 10px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            margin-bottom: 32px;
-        }
-        .download-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(48, 209, 88, 0.15);
-        }
-        .download-btn svg { width: 18px; height: 18px; }
-        .email-note {
+        .help-note {
             font-size: 13px;
             color: var(--text-secondary);
         }
+        .help-note a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .help-note a:hover { text-decoration: underline; }
         .loading {
             color: var(--text-secondary);
             font-size: 15px;
@@ -139,13 +162,13 @@
         }
         .spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border: 2px solid var(--border);
             border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .error {
@@ -158,49 +181,63 @@
             color: var(--accent);
             text-decoration: none;
             font-size: 14px;
-            margin-top: 24px;
+            margin-top: 28px;
         }
         .back-link:hover { text-decoration: underline; }
         .hidden { display: none; }
+
+        @media (max-width: 480px) {
+            .btn-row { flex-direction: column; }
+            .icon { width: 120px; height: 120px; border-radius: 28px; }
+            .icon-glow { width: 120px; height: 120px; }
+            h1 { font-size: 26px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="icon.png" alt="Ekual" class="icon">
-        <h1>Thank you for purchasing Ekual!</h1>
-        <p class="subtitle">Your license key is ready.</p>
+        <div class="icon-wrapper">
+            <div class="icon-glow"></div>
+            <img src="icon.png" alt="Ekual" class="icon">
+        </div>
+        <h1 data-i18n="title">Thank you for purchasing Ekual!</h1>
+        <p class="subtitle" data-i18n="subtitle">Your license key is ready.</p>
 
         <div id="loading">
             <div class="spinner"></div>
-            <p class="loading">Generating your license key...</p>
+            <p class="loading" data-i18n="loading">Generating your license key...</p>
         </div>
 
         <div id="result" class="hidden">
             <div class="key-box" id="keyBox"></div>
-            <button class="copy-btn" id="copyBtn" onclick="copyKey()">Copy to Clipboard</button>
-
-            <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="download-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
-                Download Ekual.dmg
-            </a>
+            <div class="btn-row">
+                <button class="btn btn-copy" id="copyBtn" onclick="copyKey()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    <span data-i18n="copy">Copy to Clipboard</span>
+                </button>
+                <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="btn btn-download">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+                    <span data-i18n="download">Download Ekual</span>
+                </a>
+            </div>
 
             <div class="steps">
-                <h3>To get started:</h3>
+                <h3 data-i18n="steps_title">To get started:</h3>
                 <ol>
-                    <li>Download and open <strong>Ekual.dmg</strong></li>
-                    <li>Drag Ekual to your Applications folder</li>
-                    <li>Open Ekual from the menu bar</li>
-                    <li>Paste your license key and click <strong>Activate</strong></li>
+                    <li data-i18n="step1">Download and open <strong>Ekual.dmg</strong></li>
+                    <li data-i18n="step2">Drag Ekual to your Applications folder</li>
+                    <li data-i18n="step3">Open Ekual from the menu bar</li>
+                    <li data-i18n="step4">Paste your license key and click <strong>Activate</strong></li>
                 </ol>
             </div>
-            <p class="email-note">Lost your key? Contact <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a></p>
+            <p class="help-note" data-i18n="help_note">Lost your key? Contact <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a></p>
         </div>
 
         <div id="error" class="hidden">
-            <p class="error" id="errorMsg">Could not retrieve your license key. Please contact <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a> for help.</p>
+            <p class="error" id="errorMsg" data-i18n="error">Could not retrieve your license key. Please contact <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a> for help.</p>
         </div>
 
-        <a href="./" class="back-link">&larr; Back to Ekual</a>
+        <a href="./" class="back-link" data-i18n="back">&larr; Back to Ekual</a>
     </div>
 
     <script>
@@ -208,6 +245,166 @@
         let retries = 0;
         let lastError = "";
 
+        // ── Localization ────────────────────────────────────────
+        const T = {
+            en: {
+                title: "Thank you for purchasing Ekual!",
+                subtitle: "Your license key is ready.",
+                loading: "Generating your license key...",
+                copy: "Copy to Clipboard",
+                copied: "Copied!",
+                download: "Download Ekual",
+                steps_title: "To get started:",
+                step1: 'Download and open <strong>Ekual.dmg</strong>',
+                step2: "Drag Ekual to your Applications folder",
+                step3: "Open Ekual from the menu bar",
+                step4: 'Paste your license key and click <strong>Activate</strong>',
+                help_note: 'Lost your key? Contact <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>',
+                error: 'Could not retrieve your license key. Please contact <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a> for help.',
+                back: "\u2190 Back to Ekual",
+            },
+            es: {
+                title: "\u00a1Gracias por comprar Ekual!",
+                subtitle: "Tu clave de licencia est\u00e1 lista.",
+                loading: "Generando tu clave de licencia...",
+                copy: "Copiar al Portapapeles",
+                copied: "\u00a1Copiado!",
+                download: "Descargar Ekual",
+                steps_title: "Para empezar:",
+                step1: 'Descarga y abre <strong>Ekual.dmg</strong>',
+                step2: "Arrastra Ekual a tu carpeta de Aplicaciones",
+                step3: "Abre Ekual desde la barra de men\u00fa",
+                step4: 'Pega tu clave de licencia y haz clic en <strong>Activar</strong>',
+                help_note: '\u00bfPerdiste tu clave? Contacta a <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>',
+                error: 'No se pudo obtener tu clave de licencia. Contacta a <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a> para ayuda.',
+                back: "\u2190 Volver a Ekual",
+            },
+            fr: {
+                title: "Merci d\u2019avoir achet\u00e9 Ekual !",
+                subtitle: "Votre cl\u00e9 de licence est pr\u00eate.",
+                loading: "G\u00e9n\u00e9ration de votre cl\u00e9 de licence...",
+                copy: "Copier dans le presse-papiers",
+                copied: "Copi\u00e9 !",
+                download: "T\u00e9l\u00e9charger Ekual",
+                steps_title: "Pour commencer :",
+                step1: 'T\u00e9l\u00e9chargez et ouvrez <strong>Ekual.dmg</strong>',
+                step2: "Glissez Ekual dans votre dossier Applications",
+                step3: "Ouvrez Ekual depuis la barre de menus",
+                step4: 'Collez votre cl\u00e9 de licence et cliquez sur <strong>Activer</strong>',
+                help_note: 'Cl\u00e9 perdue ? Contactez <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>',
+                error: 'Impossible de r\u00e9cup\u00e9rer votre cl\u00e9. Contactez <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a>.',
+                back: "\u2190 Retour \u00e0 Ekual",
+            },
+            de: {
+                title: "Danke f\u00fcr den Kauf von Ekual!",
+                subtitle: "Ihr Lizenzschl\u00fcssel ist bereit.",
+                loading: "Ihr Lizenzschl\u00fcssel wird generiert...",
+                copy: "In Zwischenablage kopieren",
+                copied: "Kopiert!",
+                download: "Ekual herunterladen",
+                steps_title: "So geht\u2019s los:",
+                step1: '<strong>Ekual.dmg</strong> herunterladen und \u00f6ffnen',
+                step2: "Ekual in den Programme-Ordner ziehen",
+                step3: "Ekual \u00fcber die Men\u00fcleiste \u00f6ffnen",
+                step4: 'Lizenzschl\u00fcssel einf\u00fcgen und <strong>Aktivieren</strong> klicken',
+                help_note: 'Schl\u00fcssel verloren? Kontaktieren Sie <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>',
+                error: 'Lizenzschl\u00fcssel konnte nicht abgerufen werden. Kontaktieren Sie <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a>.',
+                back: "\u2190 Zur\u00fcck zu Ekual",
+            },
+            pt: {
+                title: "Obrigado por comprar o Ekual!",
+                subtitle: "Sua chave de licen\u00e7a est\u00e1 pronta.",
+                loading: "Gerando sua chave de licen\u00e7a...",
+                copy: "Copiar para \u00c1rea de Transfer\u00eancia",
+                copied: "Copiado!",
+                download: "Baixar Ekual",
+                steps_title: "Para come\u00e7ar:",
+                step1: 'Baixe e abra o <strong>Ekual.dmg</strong>',
+                step2: "Arraste o Ekual para a pasta Aplicativos",
+                step3: "Abra o Ekual na barra de menus",
+                step4: 'Cole sua chave de licen\u00e7a e clique em <strong>Ativar</strong>',
+                help_note: 'Perdeu sua chave? Contate <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>',
+                error: 'N\u00e3o foi poss\u00edvel recuperar sua chave. Contate <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a>.',
+                back: "\u2190 Voltar ao Ekual",
+            },
+            it: {
+                title: "Grazie per aver acquistato Ekual!",
+                subtitle: "La tua chiave di licenza \u00e8 pronta.",
+                loading: "Generazione della chiave di licenza...",
+                copy: "Copia negli Appunti",
+                copied: "Copiato!",
+                download: "Scarica Ekual",
+                steps_title: "Per iniziare:",
+                step1: 'Scarica e apri <strong>Ekual.dmg</strong>',
+                step2: "Trascina Ekual nella cartella Applicazioni",
+                step3: "Apri Ekual dalla barra dei menu",
+                step4: 'Incolla la chiave di licenza e clicca <strong>Attiva</strong>',
+                help_note: 'Chiave persa? Contatta <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>',
+                error: 'Impossibile recuperare la chiave. Contatta <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a>.',
+                back: "\u2190 Torna a Ekual",
+            },
+            ja: {
+                title: "Ekual\u3092\u3054\u8cfc\u5165\u3044\u305f\u3060\u304d\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\uff01",
+                subtitle: "\u30e9\u30a4\u30bb\u30f3\u30b9\u30ad\u30fc\u306e\u6e96\u5099\u304c\u3067\u304d\u307e\u3057\u305f\u3002",
+                loading: "\u30e9\u30a4\u30bb\u30f3\u30b9\u30ad\u30fc\u3092\u751f\u6210\u4e2d...",
+                copy: "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u306b\u30b3\u30d4\u30fc",
+                copied: "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f\uff01",
+                download: "Ekual\u3092\u30c0\u30a6\u30f3\u30ed\u30fc\u30c9",
+                steps_title: "\u59cb\u3081\u65b9\uff1a",
+                step1: '<strong>Ekual.dmg</strong>\u3092\u30c0\u30a6\u30f3\u30ed\u30fc\u30c9\u3057\u3066\u958b\u304f',
+                step2: "Ekual\u3092\u30a2\u30d7\u30ea\u30b1\u30fc\u30b7\u30e7\u30f3\u30d5\u30a9\u30eb\u30c0\u306b\u30c9\u30e9\u30c3\u30b0",
+                step3: "\u30e1\u30cb\u30e5\u30fc\u30d0\u30fc\u304b\u3089Ekual\u3092\u958b\u304f",
+                step4: '\u30e9\u30a4\u30bb\u30f3\u30b9\u30ad\u30fc\u3092\u8cbc\u308a\u4ed8\u3051\u3066<strong>\u30a2\u30af\u30c6\u30a3\u30d9\u30fc\u30c8</strong>\u3092\u30af\u30ea\u30c3\u30af',
+                help_note: '\u30ad\u30fc\u3092\u7d1b\u5931\u3057\u307e\u3057\u305f\u304b\uff1f<a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>\u307e\u3067',
+                error: '\u30e9\u30a4\u30bb\u30f3\u30b9\u30ad\u30fc\u3092\u53d6\u5f97\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002<a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a>\u306b\u304a\u554f\u3044\u5408\u308f\u305b\u304f\u3060\u3055\u3044\u3002',
+                back: "\u2190 Ekual\u306b\u623b\u308b",
+            },
+            zh: {
+                title: "\u611f\u8c22\u8d2d\u4e70 Ekual\uff01",
+                subtitle: "\u60a8\u7684\u8bb8\u53ef\u8bc1\u5bc6\u94a5\u5df2\u51c6\u5907\u5c31\u7eea\u3002",
+                loading: "\u6b63\u5728\u751f\u6210\u60a8\u7684\u8bb8\u53ef\u8bc1\u5bc6\u94a5...",
+                copy: "\u590d\u5236\u5230\u526a\u8d34\u677f",
+                copied: "\u5df2\u590d\u5236\uff01",
+                download: "\u4e0b\u8f7d Ekual",
+                steps_title: "\u5f00\u59cb\u4f7f\u7528\uff1a",
+                step1: '\u4e0b\u8f7d\u5e76\u6253\u5f00 <strong>Ekual.dmg</strong>',
+                step2: "\u5c06 Ekual \u62d6\u5230\u201c\u5e94\u7528\u7a0b\u5e8f\u201d\u6587\u4ef6\u5939",
+                step3: "\u4ece\u83dc\u5355\u680f\u6253\u5f00 Ekual",
+                step4: '\u7c98\u8d34\u8bb8\u53ef\u8bc1\u5bc6\u94a5\u5e76\u70b9\u51fb<strong>\u6fc0\u6d3b</strong>',
+                help_note: '\u5bc6\u94a5\u4e22\u5931\uff1f\u8054\u7cfb <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>',
+                error: '\u65e0\u6cd5\u83b7\u53d6\u60a8\u7684\u8bb8\u53ef\u8bc1\u5bc6\u94a5\u3002\u8bf7\u8054\u7cfb <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a>\u3002',
+                back: "\u2190 \u8fd4\u56de Ekual",
+            },
+            ko: {
+                title: "Ekual\uc744 \uad6c\ub9e4\ud574 \uc8fc\uc154\uc11c \uac10\uc0ac\ud569\ub2c8\ub2e4!",
+                subtitle: "\ub77c\uc774\uc120\uc2a4 \ud0a4\uac00 \uc900\ube44\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
+                loading: "\ub77c\uc774\uc120\uc2a4 \ud0a4 \uc0dd\uc131 \uc911...",
+                copy: "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac",
+                copied: "\ubcf5\uc0ac\ub428!",
+                download: "Ekual \ub2e4\uc6b4\ub85c\ub4dc",
+                steps_title: "\uc2dc\uc791\ud558\uae30:",
+                step1: '<strong>Ekual.dmg</strong>\ub97c \ub2e4\uc6b4\ub85c\ub4dc\ud558\uace0 \uc5f4\uae30',
+                step2: "Ekual\uc744 \uc751\uc6a9 \ud504\ub85c\uadf8\ub7a8 \ud3f4\ub354\ub85c \ub4dc\ub798\uadf8",
+                step3: "\uba54\ub274 \ub9c9\ub300\uc5d0\uc11c Ekual \uc5f4\uae30",
+                step4: '\ub77c\uc774\uc120\uc2a4 \ud0a4\ub97c \ubd99\uc5ec\ub123\uace0 <strong>\ud65c\uc131\ud654</strong> \ud074\ub9ad',
+                help_note: '\ud0a4\ub97c \ubd84\uc2e4\ud558\uc168\ub098\uc694? <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>\uc73c\ub85c \uc5f0\ub77d',
+                error: '\ub77c\uc774\uc120\uc2a4 \ud0a4\ub97c \uac00\uc838\uc62c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. <a href="mailto:corvusdevs@outlook.com" style="color: var(--accent);">corvusdevs@outlook.com</a>\uc73c\ub85c \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694.',
+                back: "\u2190 Ekual\ub85c \ub3cc\uc544\uac00\uae30",
+            },
+        };
+
+        function applyLang() {
+            const lang = (navigator.language || "en").slice(0, 2);
+            const t = T[lang] || T.en;
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (t[key]) el.innerHTML = t[key];
+            });
+            document.documentElement.lang = lang;
+        }
+        applyLang();
+
+        // ── License Key Fetch ───────────────────────────────────
         async function fetchLicense() {
             const params = new URLSearchParams(window.location.search);
             const txnId = params.get("_ptxn") || params.get("transaction_id");
@@ -247,11 +444,13 @@
         }
 
         function copyKey() {
+            const lang = (navigator.language || "en").slice(0, 2);
+            const t = T[lang] || T.en;
             const key = document.getElementById("keyBox").textContent;
             navigator.clipboard.writeText(key);
-            const btn = document.getElementById("copyBtn");
-            btn.textContent = "Copied!";
-            setTimeout(() => { btn.textContent = "Copy to Clipboard"; }, 2000);
+            const span = document.querySelector("#copyBtn span");
+            span.textContent = t.copied;
+            setTimeout(() => { span.textContent = t.copy; }, 2000);
         }
 
         setTimeout(fetchLicense, 1500);
