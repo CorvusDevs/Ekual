@@ -103,6 +103,28 @@
             color: var(--text-secondary);
             margin-bottom: 6px;
         }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 32px;
+        }
+        .download-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(48, 209, 88, 0.15);
+        }
+        .download-btn svg { width: 18px; height: 18px; }
         .email-note {
             font-size: 13px;
             color: var(--text-secondary);
@@ -154,15 +176,21 @@
             <div class="key-box" id="keyBox"></div>
             <button class="copy-btn" id="copyBtn" onclick="copyKey()">Copy to Clipboard</button>
 
+            <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="download-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+                Download Ekual.dmg
+            </a>
+
             <div class="steps">
-                <h3>To activate Ekual:</h3>
+                <h3>To get started:</h3>
                 <ol>
+                    <li>Download and open <strong>Ekual.dmg</strong></li>
+                    <li>Drag Ekual to your Applications folder</li>
                     <li>Open Ekual from the menu bar</li>
-                    <li>Paste the key into the license field</li>
-                    <li>Click <strong>Activate</strong></li>
+                    <li>Paste your license key and click <strong>Activate</strong></li>
                 </ol>
             </div>
-            <p class="email-note">A copy has also been sent to your email.</p>
+            <p class="email-note">A copy of your key has also been sent to your email.</p>
         </div>
 
         <div id="error" class="hidden">
