@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekual — Loudness Equalization for macOS | The Feature Apple Forgot</title>
+    <meta name="description" content="Ekual brings automatic loudness equalization to macOS — the feature Windows has had for years. Balances volume across all apps in real-time. $1.99, menu bar app, near-zero CPU.">
+    <meta name="keywords" content="loudness equalization, macOS, volume balancing, audio equalizer, mac menu bar app, dynamic range compression, volume leveling, ekual">
+    <link rel="canonical" href="https://corvusdevs.github.io/Ekual/">
+    <link rel="alternate" hreflang="en" href="https://corvusdevs.github.io/Ekual/">
+    <link rel="alternate" hreflang="es" href="https://corvusdevs.github.io/Ekual/?lang=es">
+    <link rel="alternate" hreflang="fr" href="https://corvusdevs.github.io/Ekual/?lang=fr">
+    <link rel="alternate" hreflang="de" href="https://corvusdevs.github.io/Ekual/?lang=de">
+    <link rel="alternate" hreflang="pt" href="https://corvusdevs.github.io/Ekual/?lang=pt">
+    <link rel="alternate" hreflang="it" href="https://corvusdevs.github.io/Ekual/?lang=it">
+    <link rel="alternate" hreflang="ja" href="https://corvusdevs.github.io/Ekual/?lang=ja">
+    <link rel="alternate" hreflang="ko" href="https://corvusdevs.github.io/Ekual/?lang=ko">
+    <link rel="alternate" hreflang="ru" href="https://corvusdevs.github.io/Ekual/?lang=ru">
+    <link rel="alternate" hreflang="zh" href="https://corvusdevs.github.io/Ekual/?lang=zh">
+    <link rel="alternate" hreflang="x-default" href="https://corvusdevs.github.io/Ekual/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CorvusDevs">
+    <meta property="og:url" content="https://corvusdevs.github.io/Ekual/">
+    <meta property="og:title" content="Ekual — The Loudness Equalization macOS Never Had">
+    <meta property="og:description" content="Windows has had loudness equalization for over a decade. macOS still doesn't. Ekual fixes that — automatic volume balancing across every app, in real time. $1.99.">
+    <meta property="og:image" content="https://corvusdevs.github.io/Ekual/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ekual — The Loudness Equalization macOS Never Had">
+    <meta name="twitter:description" content="Windows has had it for years. Now your Mac does too. Automatic volume balancing across every app, real-time, menu bar. $1.99.">
+    <meta name="twitter:image" content="https://corvusdevs.github.io/Ekual/og-image.png">
+    <meta name="robots" content="index, follow">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Ekual",
+        "operatingSystem": "macOS 14.2+",
+        "applicationCategory": "UtilitiesApplication",
+        "applicationSubCategory": "Audio Utility",
+        "description": "Automatic loudness equalization for macOS. Balances volume across all apps in real-time — the feature Apple forgot.",
+        "downloadUrl": "https://apps.apple.com/app/id6740149498",
+        "screenshot": "https://corvusdevs.github.io/Ekual/screenshot.png",
+        "url": "https://corvusdevs.github.io/Ekual/",
+        "offers": {
+            "@type": "Offer",
+            "price": "1.99",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "CorvusDevs",
+            "url": "https://corvusdevs.github.io"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1"
+        }
+    }
+    </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <style>
+        :root {
+            --bg: #000;
+            --surface: #111113;
+            --surface-2: #1c1c1e;
+            --border: rgba(255,255,255,0.08);
+            --text: #f5f5f7;
+            --text-secondary: #86868b;
+            --accent: #30d158;
+            --accent-dim: rgba(48,209,88,0.12);
+            --accent-glow: rgba(48,209,88,0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Scroll reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Gradient text utility */
+        .gradient-text {
+            background: linear-gradient(135deg, #30d158 0%, #63e6be 40%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Section backgrounds */
+        .section-dark { background: var(--bg); }
+        .section-elevated {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Nav */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 40px; height: 48px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .nav-brand {
+            font-size: 16px; font-weight: 600; color: var(--text);
+            text-decoration: none; display: flex; align-items: center; gap: 8px;
+        }
+        .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
+        .nav-brand span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a {
+            font-size: 13px; color: var(--text-secondary); text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+
+        .lang-wrap { position: relative; margin-left: 16px; flex-shrink: 0; }
+        .lang-btn {
+            background: transparent; border: 1px solid var(--border); border-radius: 6px;
+            padding: 4px 24px 4px 10px; color: var(--text-secondary); font-size: 12px; cursor: pointer;
+            white-space: nowrap;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 8px center;
+        }
+        .lang-menu {
+            display: none; position: absolute; top: calc(100% + 6px); right: 0; z-index: 300;
+            background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+            padding: 4px 0; min-width: 150px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        }
+        .lang-menu.open { display: block; }
+        .lang-menu button {
+            display: block; width: 100%; padding: 6px 14px; background: none; border: none;
+            color: var(--text); font-size: 13px; cursor: pointer; text-align: left; white-space: nowrap;
+        }
+        .lang-menu button:hover { background: rgba(255,255,255,0.06); }
+        .lang-menu button.active { color: var(--accent); }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 140px 24px 0;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -300px; left: 50%; transform: translateX(-50%);
+            width: 1200px; height: 1200px;
+            background: radial-gradient(ellipse at center, rgba(48,209,88,0.18) 0%, rgba(48,209,88,0.06) 30%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-icon {
+            width: 128px; height: 128px; border-radius: 30px;
+            margin-bottom: 28px; position: relative;
+            box-shadow: 0 0 100px 40px rgba(48,209,88,0.2), 0 0 200px 80px rgba(48,209,88,0.08);
+        }
+
+        .hero h1 {
+            font-size: 80px; font-weight: 700; letter-spacing: -3px;
+            margin-bottom: 16px;
+            line-height: 1.0;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .tagline {
+            font-size: 22px; color: var(--text-secondary);
+            max-width: 520px; margin: 0 auto 40px;
+            font-weight: 400; letter-spacing: -0.2px;
+            line-height: 1.45;
+        }
+
+        .cta-button {
+            display: inline-block; padding: 14px 36px;
+            background: var(--accent); color: #000;
+            font-size: 16px; font-weight: 600; border-radius: 980px;
+            text-decoration: none; border: none; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(48,209,88,0.4);
+        }
+
+        .hero-price {
+            margin-top: 14px;
+            font-size: 14px; color: var(--text-secondary);
+        }
+
+        /* Screenshot showcase */
+        .showcase-band {
+            position: relative;
+            margin-top: 80px;
+            padding: 80px 24px;
+            overflow: hidden;
+        }
+
+        .showcase-band::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse at 30% 50%, rgba(48,209,88,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 50%, rgba(48,209,88,0.06) 0%, transparent 50%),
+                linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+            pointer-events: none;
+        }
+
+        .showcase-band::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 800px; height: 400px;
+            background: radial-gradient(ellipse, rgba(48,209,88,0.12) 0%, transparent 60%);
+            pointer-events: none;
+            filter: blur(60px);
+        }
+
+        .showcase {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            align-items: flex-start;
+        }
+
+        .screenshot-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .screenshot-wrap img {
+            width: 280px;
+            border-radius: 18px;
+            box-shadow:
+                0 24px 80px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(255,255,255,0.08),
+                0 0 40px rgba(48,209,88,0.08);
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .screenshot-wrap:hover img {
+            transform: translateY(-4px);
+        }
+
+        .screenshot-wrap .label {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Features grid */
+        .features-section {
+            max-width: 100%;
+            padding: 120px 24px 120px;
+            text-align: center;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .features-inner {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+            line-height: 1.08;
+        }
+
+        .section-subtitle {
+            font-size: 19px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto 64px;
+            line-height: 1.5;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: left;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .feature-card:hover {
+            border-color: rgba(48,209,88,0.2);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            background: var(--accent-dim);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 0 20px rgba(48,209,88,0.15);
+        }
+        .feature-icon svg { width: 24px; height: 24px; }
+        .feature-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.2px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* How it works */
+        .how-section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 100px 24px 0;
+            text-align: center;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-top: 60px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            padding: 32px 0;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+        .step:last-child { border-bottom: none; }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700;
+            border: 1px solid rgba(48,209,88,0.2);
+        }
+
+        .step-text h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+        .step-text p { font-size: 15px; color: var(--text-secondary); }
+
+        /* Why section */
+        .why-section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 100px 24px 0;
+            text-align: center;
+        }
+
+        .why-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 60px; }
+
+        .why-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: left;
+        }
+        .why-item h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+        .why-item p { font-size: 15px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Requirements */
+        .requirements { text-align: center; padding: 60px 24px 0; }
+        .requirements p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Refund */
+        .refund-banner {
+            text-align: center; padding: 24px 24px 0;
+            max-width: 680px; margin: 0 auto;
+        }
+        .refund-banner p { font-size: 15px; color: var(--text-secondary); }
+        .refund-banner strong { color: var(--text); }
+
+        /* Bottom CTA */
+        .bottom-cta {
+            text-align: center;
+            padding: 140px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .bottom-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 1000px; height: 600px;
+            background: radial-gradient(ellipse, rgba(48,209,88,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .bottom-cta h2 {
+            font-size: 56px; font-weight: 700; letter-spacing: -2px;
+            margin-bottom: 16px; line-height: 1.08;
+            position: relative;
+        }
+        .bottom-cta p {
+            font-size: 19px; color: var(--text-secondary);
+            margin-bottom: 36px;
+            position: relative;
+        }
+
+        /* Footer */
+        .footer {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-brand p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+        .footer-col h4 {
+            font-size: 12px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--text-secondary); margin-bottom: 12px;
+        }
+        .footer-col a {
+            display: block; font-size: 14px; color: var(--text);
+            text-decoration: none; margin-bottom: 8px; transition: color 0.2s;
+        }
+        .footer-col a:hover { color: var(--accent); }
+
+        .footer-bottom {
+            margin-top: 40px; padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 12px; color: var(--text-secondary); text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .features { grid-template-columns: repeat(2, 1fr); }
+            .showcase { gap: 24px; }
+            .screenshot-wrap img { width: 220px; }
+        }
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-links { gap: 16px; }
+            .hero h1 { font-size: 56px; letter-spacing: -2px; }
+            .hero .tagline { font-size: 19px; }
+            .section-title { font-size: 40px; letter-spacing: -1.5px; }
+            .bottom-cta h2 { font-size: 40px; }
+        }
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 44px; letter-spacing: -1.5px; }
+            .hero .tagline { font-size: 17px; }
+            .features { grid-template-columns: 1fr; }
+            .showcase { flex-direction: column; align-items: center; gap: 32px; }
+            .screenshot-wrap img { width: 260px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+            .section-title { font-size: 32px; letter-spacing: -1px; }
+            .bottom-cta h2 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="https://corvusdevs.github.io" class="nav-brand"><img src="https://avatars.githubusercontent.com/u/25494090?v=4" alt="CorvusDevs">Corvus<span>Devs</span></a>
+        <div style="display:flex;align-items:center;">
+            <ul class="nav-links">
+                <li><a href="#features" data-i18n="nav_features">Features</a></li>
+                <li><a href="#how" data-i18n="nav_how">How it works</a></li>
+                <li><a href="mailto:corvusdevs@outlook.com" data-i18n="nav_contact">Contact</a></li>
+            </ul>
+            <div class="lang-wrap" id="langWrap">
+                <button class="lang-btn" id="langBtn">EN</button>
+                <div class="lang-menu" id="langMenu">
+                    <button data-lang="en">English</button>
+                    <button data-lang="es">Español</button>
+                    <button data-lang="fr">Français</button>
+                    <button data-lang="de">Deutsch</button>
+                    <button data-lang="pt">Português</button>
+                    <button data-lang="it">Italiano</button>
+                    <button data-lang="ja">日本語</button>
+                    <button data-lang="zh">中文</button>
+                    <button data-lang="ko">한국어</button>
+                    <button data-lang="ru">Русский</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <img src="icon.png" alt="Ekual icon" class="hero-icon">
+        <h1>Ekual</h1>
+        <p class="tagline" data-i18n="tagline">Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.</p>
+        <button class="cta-button" onclick="openCheckout()" data-i18n="cta">Get Ekual</button>
+        <p class="hero-price" data-i18n="hero_price">$1.99</p>
+    </section>
+
+    <!-- Screenshots -->
+    <div class="showcase-band">
+        <div class="showcase reveal">
+            <div class="screenshot-wrap">
+                <img src="screenshot.png" alt="Ekual app interface">
+                <p class="label" data-i18n="ss_label1">Clean, minimal interface</p>
+            </div>
+            <div class="screenshot-wrap">
+                <img src="screenshot-2.png" alt="Ekual level meters">
+                <p class="label" data-i18n="ss_label2">Real-time level meters</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section class="features-section" id="features">
+        <div class="features-inner">
+        <p class="section-label reveal" data-i18n="feat_label">Features</p>
+        <h2 class="section-title gradient-text reveal" data-i18n="feat_title">Everything you need.<br>Nothing you don't.</h2>
+        <p class="section-subtitle reveal" data-i18n="feat_subtitle">Ekual runs silently in your menu bar and handles all the complexity for you.</p>
+        <div class="features reveal">
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3v5zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3v5z"/></svg></div>
+                <h3 data-i18n="feat1_title">Real-Time Processing</h3>
+                <p data-i18n="feat1_desc">Equalizes volume across all apps instantly. Movies, music, calls, games — all balanced automatically.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                <h3 data-i18n="feat2_title">Near-Zero CPU</h3>
+                <p data-i18n="feat2_desc">Engineered for efficiency. Runs at less than 1% CPU so you never notice it's there.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+                <h3 data-i18n="feat3_title">Customizable Presets</h3>
+                <p data-i18n="feat3_desc">Light, Medium, Heavy — or create your own. Fine-tune release time, makeup gain, and target level.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="7" y1="7" x2="17" y2="13"/></svg></div>
+                <h3 data-i18n="feat4_title">App Exclusions</h3>
+                <p data-i18n="feat4_desc">Exclude specific apps from processing. Keep your music player untouched while equalizing everything else.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><line x1="6" y1="8" x2="6.01" y2="8"/><line x1="10" y1="8" x2="10.01" y2="8"/><line x1="14" y1="8" x2="14.01" y2="8"/><line x1="18" y1="8" x2="18.01" y2="8"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/><line x1="8" y1="16" x2="16" y2="16"/></svg></div>
+                <h3 data-i18n="feat5_title">Global Shortcut</h3>
+                <p data-i18n="feat5_desc">Toggle equalization on and off with a customizable keyboard shortcut from anywhere.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <h3 data-i18n="feat6_title">Fully Private</h3>
+                <p data-i18n="feat6_desc">All audio processing happens locally on your Mac. No data leaves your device. Ever.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="M3.51 15A9 9 0 0 0 18.36 18.36L23 14"/></svg></div>
+                <h3 data-i18n="feat7_title">Hotswap Audio</h3>
+                <p data-i18n="feat7_desc">Switch between output devices on the fly. Ekual seamlessly follows your audio wherever it goes.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11"/></svg></div>
+                <h3 data-i18n="feat8_title">Bluetooth Ready</h3>
+                <p data-i18n="feat8_desc">Full support for AirPods, Bluetooth headphones, and wireless speakers. Works with every audio device macOS recognizes.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <h3 data-i18n="feat9_title">Starts with Your Mac</h3>
+                <p data-i18n="feat9_desc">Launches automatically at login and runs silently in the menu bar. Set it once, never think about it again.</p>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-section" id="how">
+        <p class="section-label reveal" data-i18n="how_label">Setup</p>
+        <h2 class="section-title gradient-text reveal" data-i18n="how_title">How it works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">
+                    <h3 data-i18n="step1_title">Install and launch</h3>
+                    <p data-i18n="step1_desc">Ekual lives in your menu bar. Grant audio permission once and you're ready to go.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">
+                    <h3 data-i18n="step2_title">Pick a preset</h3>
+                    <p data-i18n="step2_desc">Choose Light, Medium, or Heavy equalization — or dial in your own settings with the sliders.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">
+                    <h3 data-i18n="step3_title">Forget about it</h3>
+                    <p data-i18n="step3_desc">Ekual starts with your Mac and works silently in the background. Consistent volume, zero effort.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why -->
+    <section class="why-section">
+        <p class="section-label reveal" data-i18n="why_label">Why Ekual</p>
+        <h2 class="section-title gradient-text reveal" data-i18n="why_title">Why you need loudness equalization</h2>
+        <p class="section-subtitle reveal" data-i18n="why_intro">Every app, website, and media file is mastered at a different volume level. Your Mac doesn't fix this — but Ekual does.</p>
+        <div class="why-grid">
+            <div class="why-item">
+                <h3 data-i18n="why1_title">The volume rollercoaster</h3>
+                <p data-i18n="why1_desc">You're watching a quiet dialogue scene, then an ad blasts at full volume. You switch from a podcast to a YouTube video and scramble for the volume keys. Different apps, different websites, different streaming services — they all output audio at wildly different levels. Without equalization, you're constantly adjusting volume by hand.</p>
+            </div>
+            <div class="why-item">
+                <h3 data-i18n="why2_title">How Ekual solves it</h3>
+                <p data-i18n="why2_desc">Ekual applies real-time dynamic range compression to your Mac's system audio. It monitors the loudness of the audio stream, brings quiet sounds up and loud sounds down to meet a consistent target level. The result: everything plays at a comfortable, even volume — whether it's a whisper-quiet video call or a booming action movie trailer.</p>
+            </div>
+            <div class="why-item">
+                <h3 data-i18n="why3_title">Windows has it. macOS doesn't.</h3>
+                <p data-i18n="why3_desc">Windows has included a "Loudness Equalization" option in its audio settings for over a decade. macOS has never offered this feature. Ekual fills that gap — giving Mac users the same volume consistency that Windows users have had for years, with a cleaner implementation and more control.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Requirements -->
+    <section class="requirements">
+        <p data-i18n="requirements">Requires macOS 14.2 or later.</p>
+    </section>
+
+    <!-- Refund -->
+    <section class="refund-banner">
+        <p><strong data-i18n="refund_bold">14-day money-back guarantee.</strong> <span data-i18n="refund_text">Not satisfied? Contact us within 14 days for a full refund, no questions asked.</span></p>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="bottom-cta">
+        <h2 class="gradient-text reveal" data-i18n="bottom_cta_title">Consistent volume.<br>Zero effort.</h2>
+        <p data-i18n="bottom_cta_subtitle">Stop reaching for the volume keys.</p>
+        <button class="cta-button" onclick="openCheckout()" data-i18n="cta">Get Ekual</button>
+        <p class="hero-price" data-i18n="hero_price">$1.99</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <p><strong>Ekual</strong> <span data-i18n="footer_brand">is made by CorvusDevs.</span><br>
+                <span data-i18n="footer_tagline">Loudness equalization for macOS — the feature Apple forgot.</span></p>
+            </div>
+            <div class="footer-col">
+                <h4 data-i18n="footer_legal">Legal</h4>
+                <a href="terms" data-i18n="footer_terms">Terms of Service</a>
+                <a href="privacy" data-i18n="footer_privacy">Privacy Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4 data-i18n="footer_contact">Contact</h4>
+                <a href="mailto:corvusdevs@outlook.com">corvusdevs@outlook.com</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 CorvusDevs. <span data-i18n="footer_rights">All rights reserved.</span> <span data-i18n="footer_payments">Payments processed by</span> <a href="https://paddle.com" style="color: var(--text-secondary); text-decoration: underline;">Paddle</a>.
+        </div>
+    </footer>
+
+    <!-- Paddle Checkout -->
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <script>
+        Paddle.Initialize({ token: "live_56066aaf7cbe507b874f560dbcd" });
+
+        function openCheckout() {
+            Paddle.Checkout.open({
+                items: [{ priceId: "pri_01kn3hw3263q8h0yavh9yd95kd", quantity: 1 }],
+                settings: {
+                    successUrl: "https://corvusdevs.github.io/Ekual/success",
+                },
+            });
+        }
+    </script>
+
+    <!-- Localization -->
+    <script>
+    const T = {
+        en: {
+            nav_features: "Features", nav_how: "How it works", nav_contact: "Contact",
+            tagline: "Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.",
+            cta: "Get Ekual", hero_price: "$1.99",
+            ss_label1: "Clean, minimal interface", ss_label2: "Real-time level meters",
+            feat_label: "Features", feat_title: "Everything you need.\nNothing you don't.", feat_subtitle: "Ekual runs silently in your menu bar and handles all the complexity for you.",
+            feat1_title: "Real-Time Processing", feat1_desc: "Equalizes volume across all apps instantly. Movies, music, calls, games — all balanced automatically.",
+            feat2_title: "Near-Zero CPU", feat2_desc: "Engineered for efficiency. Runs at less than 1% CPU so you never notice it's there.",
+            feat3_title: "Customizable Presets", feat3_desc: "Light, Medium, Heavy — or create your own. Fine-tune release time, makeup gain, and target level.",
+            feat4_title: "App Exclusions", feat4_desc: "Exclude specific apps from processing. Keep your music player untouched while equalizing everything else.",
+            feat5_title: "Global Shortcut", feat5_desc: "Toggle equalization on and off with a customizable keyboard shortcut from anywhere.",
+            feat6_title: "Fully Private", feat6_desc: "All audio processing happens locally on your Mac. No data leaves your device. Ever.",
+            feat7_title: "Hotswap Audio", feat7_desc: "Switch between output devices on the fly. Ekual seamlessly follows your audio wherever it goes.",
+            feat8_title: "Bluetooth Ready", feat8_desc: "Full support for AirPods, Bluetooth headphones, and wireless speakers. Works with every audio device macOS recognizes.",
+            feat9_title: "Starts with Your Mac", feat9_desc: "Launches automatically at login and runs silently in the menu bar. Set it once, never think about it again.",
+            how_label: "Setup", how_title: "How it works",
+            step1_title: "Install and launch", step1_desc: "Ekual lives in your menu bar. Grant audio permission once and you're ready to go.",
+            step2_title: "Pick a preset", step2_desc: "Choose Light, Medium, or Heavy equalization — or dial in your own settings with the sliders.",
+            step3_title: "Forget about it", step3_desc: "Ekual starts with your Mac and works silently in the background. Consistent volume, zero effort.",
+            why_label: "Why Ekual", why_title: "Why you need loudness equalization",
+            why_intro: "Every app, website, and media file is mastered at a different volume level. Your Mac doesn't fix this — but Ekual does.",
+            why1_title: "The volume rollercoaster", why1_desc: "You're watching a quiet dialogue scene, then an ad blasts at full volume. You switch from a podcast to a YouTube video and scramble for the volume keys. Different apps, different websites, different streaming services — they all output audio at wildly different levels. Without equalization, you're constantly adjusting volume by hand.",
+            why2_title: "How Ekual solves it", why2_desc: "Ekual applies real-time dynamic range compression to your Mac's system audio. It monitors the loudness of the audio stream, brings quiet sounds up and loud sounds down to meet a consistent target level. The result: everything plays at a comfortable, even volume — whether it's a whisper-quiet video call or a booming action movie trailer.",
+            why3_title: "Windows has it. macOS doesn't.", why3_desc: "Windows has included a \"Loudness Equalization\" option in its audio settings for over a decade. macOS has never offered this feature. Ekual fills that gap — giving Mac users the same volume consistency that Windows users have had for years, with a cleaner implementation and more control.",
+            requirements: "Requires macOS 14.2 or later.",
+            refund_bold: "14-day money-back guarantee.", refund_text: "Not satisfied? Contact us within 14 days for a full refund, no questions asked.",
+            bottom_cta_title: "Consistent volume.\nZero effort.", bottom_cta_subtitle: "Stop reaching for the volume keys.",
+            footer_brand: "is made by CorvusDevs.", footer_tagline: "Loudness equalization for macOS — the feature Apple forgot.",
+            footer_legal: "Legal", footer_terms: "Terms of Service", footer_privacy: "Privacy Policy", footer_contact: "Contact",
+            footer_rights: "All rights reserved.", footer_payments: "Payments processed by",
+        },
+        es: {
+            nav_features: "Funciones", nav_how: "Cómo funciona", nav_contact: "Contacto",
+            tagline: "Ecualización de volumen automática para macOS. Sonidos bajos más altos, sonidos fuertes más bajos — en tiempo real.",
+            cta: "Obtener Ekual", hero_price: "$1.99",
+            ss_label1: "Interfaz limpia y minimalista", ss_label2: "Medidores de nivel en tiempo real",
+            feat_label: "Funciones", feat_title: "Todo lo que necesitas.\nNada que no.", feat_subtitle: "Ekual se ejecuta silenciosamente en tu barra de menú y gestiona toda la complejidad por ti.",
+            feat1_title: "Procesamiento en Tiempo Real", feat1_desc: "Ecualiza el volumen en todas las apps al instante. Películas, música, llamadas, juegos — todo equilibrado automáticamente.",
+            feat2_title: "CPU Casi Nulo", feat2_desc: "Diseñado para la eficiencia. Funciona con menos del 1% de CPU para que nunca notes que está ahí.",
+            feat3_title: "Presets Personalizables", feat3_desc: "Ligero, Medio, Fuerte — o crea el tuyo. Ajusta el tiempo de liberación, ganancia y nivel objetivo.",
+            feat4_title: "Exclusión de Apps", feat4_desc: "Excluye apps específicas del procesamiento. Mantén tu reproductor de música intacto mientras ecualizas todo lo demás.",
+            feat5_title: "Atajo Global", feat5_desc: "Activa o desactiva la ecualización con un atajo de teclado personalizable desde cualquier lugar.",
+            feat6_title: "Totalmente Privado", feat6_desc: "Todo el procesamiento de audio ocurre localmente en tu Mac. Ningún dato sale de tu dispositivo. Nunca.",
+            feat7_title: "Cambio de Audio en Caliente", feat7_desc: "Cambia entre dispositivos de salida sobre la marcha. Ekual sigue tu audio sin interrupciones.",
+            feat8_title: "Compatible con Bluetooth", feat8_desc: "Soporte completo para AirPods, auriculares Bluetooth y altavoces inalámbricos. Funciona con cada dispositivo de audio que macOS reconoce.",
+            feat9_title: "Inicia con tu Mac", feat9_desc: "Se ejecuta automáticamente al iniciar sesión y funciona silenciosamente en la barra de menú. Configúralo una vez, olvídate para siempre.",
+            how_label: "Configuración", how_title: "Cómo funciona",
+            step1_title: "Instala y ejecuta", step1_desc: "Ekual vive en tu barra de menú. Otorga permiso de audio una vez y estarás listo.",
+            step2_title: "Elige un preset", step2_desc: "Elige ecualización Ligera, Media o Fuerte — o ajusta tu propia configuración con los controles.",
+            step3_title: "Olvídate de él", step3_desc: "Ekual inicia con tu Mac y trabaja silenciosamente en segundo plano. Volumen consistente, cero esfuerzo.",
+            why_label: "Por qué Ekual", why_title: "Por qué necesitas ecualización de volumen",
+            why_intro: "Cada app, sitio web y archivo multimedia está masterizado a un nivel de volumen diferente. Tu Mac no corrige esto — pero Ekual sí.",
+            why1_title: "La montaña rusa del volumen", why1_desc: "Estás viendo una escena de diálogo tranquila, y de repente un anuncio suena a todo volumen. Cambias de un podcast a un video de YouTube y buscas las teclas de volumen desesperadamente. Diferentes apps, sitios web y servicios de streaming — todos emiten audio a niveles muy distintos. Sin ecualización, estás ajustando el volumen constantemente.",
+            why2_title: "Cómo Ekual lo soluciona", why2_desc: "Ekual aplica compresión de rango dinámico en tiempo real al audio del sistema de tu Mac. Monitorea el volumen del audio, sube los sonidos bajos y baja los fuertes hasta un nivel objetivo consistente. El resultado: todo suena a un volumen cómodo y uniforme — ya sea una videollamada silenciosa o un tráiler de película de acción.",
+            why3_title: "Windows lo tiene. macOS no.", why3_desc: "Windows incluye una opción de \"Ecualización de volumen\" en su configuración de audio desde hace más de una década. macOS nunca ha ofrecido esta función. Ekual llena ese vacío — dando a los usuarios de Mac la misma consistencia de volumen que los usuarios de Windows han tenido durante años, con una implementación más limpia y más control.",
+            requirements: "Requiere macOS 14.2 o posterior.",
+            refund_bold: "Garantía de devolución de 14 días.", refund_text: "¿No estás satisfecho? Contáctanos en los primeros 14 días para un reembolso completo, sin preguntas.",
+            bottom_cta_title: "Volumen consistente.\nCero esfuerzo.", bottom_cta_subtitle: "Deja de buscar las teclas de volumen.",
+            footer_brand: "está hecho por CorvusDevs.", footer_tagline: "Ecualización de volumen para macOS — la función que Apple olvidó.",
+            footer_legal: "Legal", footer_terms: "Términos de Servicio", footer_privacy: "Política de Privacidad", footer_contact: "Contacto",
+            footer_rights: "Todos los derechos reservados.", footer_payments: "Pagos procesados por",
+        },
+        fr: {
+            nav_features: "Fonctionnalités", nav_how: "Comment ça marche", nav_contact: "Contact",
+            tagline: "Égalisation automatique du volume pour macOS. Les sons faibles montent, les sons forts baissent — en temps réel.",
+            cta: "Obtenir Ekual", hero_price: "1,99 $",
+            ss_label1: "Interface épurée et minimale", ss_label2: "Indicateurs de niveau en temps réel",
+            feat_label: "Fonctionnalités", feat_title: "Tout ce qu'il vous faut.\nRien de superflu.", feat_subtitle: "Ekual fonctionne silencieusement dans votre barre de menus et gère toute la complexité pour vous.",
+            feat1_title: "Traitement en Temps Réel", feat1_desc: "Égalise le volume de toutes les apps instantanément. Films, musique, appels, jeux — tout est équilibré automatiquement.",
+            feat2_title: "CPU Quasi Nul", feat2_desc: "Conçu pour l'efficacité. Fonctionne à moins de 1% du CPU pour que vous ne remarquiez jamais sa présence.",
+            feat3_title: "Préréglages Personnalisables", feat3_desc: "Léger, Moyen, Fort — ou créez le vôtre. Ajustez le temps de relâchement, le gain et le niveau cible.",
+            feat4_title: "Exclusion d'Apps", feat4_desc: "Excluez des apps spécifiques du traitement. Gardez votre lecteur musical intact en égalisant tout le reste.",
+            feat5_title: "Raccourci Global", feat5_desc: "Activez ou désactivez l'égalisation avec un raccourci clavier personnalisable depuis n'importe où.",
+            feat6_title: "Totalement Privé", feat6_desc: "Tout le traitement audio se fait localement sur votre Mac. Aucune donnée ne quitte votre appareil. Jamais.",
+            feat7_title: "Changement Audio à Chaud", feat7_desc: "Passez d'un appareil de sortie à l'autre à la volée. Ekual suit votre audio sans interruption.",
+            feat8_title: "Compatible Bluetooth", feat8_desc: "Support complet des AirPods, casques Bluetooth et enceintes sans fil. Fonctionne avec chaque appareil audio reconnu par macOS.",
+            feat9_title: "Démarre avec votre Mac", feat9_desc: "Se lance automatiquement à la connexion et fonctionne silencieusement dans la barre de menus. Configurez-le une fois, oubliez-le.",
+            how_label: "Configuration", how_title: "Comment ça marche",
+            step1_title: "Installez et lancez", step1_desc: "Ekual vit dans votre barre de menus. Accordez la permission audio une fois et c'est parti.",
+            step2_title: "Choisissez un préréglage", step2_desc: "Choisissez l'égalisation Légère, Moyenne ou Forte — ou ajustez vos propres paramètres avec les curseurs.",
+            step3_title: "Oubliez-le", step3_desc: "Ekual démarre avec votre Mac et travaille silencieusement en arrière-plan. Volume constant, zéro effort.",
+            why_label: "Pourquoi Ekual", why_title: "Pourquoi vous avez besoin de l'égalisation du volume",
+            why_intro: "Chaque app, site web et fichier média est masterisé à un niveau de volume différent. Votre Mac ne corrige pas cela — mais Ekual oui.",
+            why1_title: "Les montagnes russes du volume", why1_desc: "Vous regardez une scène de dialogue calme, puis une publicité explose à plein volume. Vous passez d'un podcast à une vidéo YouTube et cherchez frénétiquement les touches de volume. Différentes apps, sites web, services de streaming — tous diffusent l'audio à des niveaux très différents. Sans égalisation, vous ajustez constamment le volume à la main.",
+            why2_title: "Comment Ekual résout le problème", why2_desc: "Ekual applique une compression dynamique en temps réel à l'audio système de votre Mac. Il surveille le volume du flux audio, monte les sons faibles et baisse les sons forts pour atteindre un niveau cible constant. Le résultat : tout est diffusé à un volume confortable et uniforme.",
+            why3_title: "Windows l'a. macOS non.", why3_desc: "Windows inclut une option d'\"Égalisation du volume\" dans ses paramètres audio depuis plus d'une décennie. macOS n'a jamais proposé cette fonction. Ekual comble cette lacune — offrant aux utilisateurs Mac la même constance de volume dont les utilisateurs Windows bénéficient depuis des années.",
+            requirements: "Nécessite macOS 14.2 ou ultérieur.",
+            refund_bold: "Garantie de remboursement de 14 jours.", refund_text: "Pas satisfait ? Contactez-nous dans les 14 jours pour un remboursement complet, sans question.",
+            bottom_cta_title: "Volume constant.\nZéro effort.", bottom_cta_subtitle: "Arrêtez de chercher les touches de volume.",
+            footer_brand: "est créé par CorvusDevs.", footer_tagline: "Égalisation du volume pour macOS — la fonction qu'Apple a oubliée.",
+            footer_legal: "Juridique", footer_terms: "Conditions d'utilisation", footer_privacy: "Politique de confidentialité", footer_contact: "Contact",
+            footer_rights: "Tous droits réservés.", footer_payments: "Paiements traités par",
+        },
+        de: {
+            nav_features: "Funktionen", nav_how: "So funktioniert's", nav_contact: "Kontakt",
+            tagline: "Automatische Lautstärke-Angleichung für macOS. Leise Töne lauter, laute Töne leiser — in Echtzeit.",
+            cta: "Ekual holen", hero_price: "1,99 $",
+            ss_label1: "Klare, minimale Oberfläche", ss_label2: "Echtzeit-Pegelanzeigen",
+            feat_label: "Funktionen", feat_title: "Alles was Sie brauchen.\nNichts was Sie nicht brauchen.", feat_subtitle: "Ekual läuft lautlos in Ihrer Menüleiste und übernimmt die gesamte Komplexität für Sie.",
+            feat1_title: "Echtzeit-Verarbeitung", feat1_desc: "Gleicht die Lautstärke aller Apps sofort an. Filme, Musik, Anrufe, Spiele — alles automatisch ausgeglichen.",
+            feat2_title: "Nahezu Null CPU", feat2_desc: "Für Effizienz entwickelt. Läuft mit weniger als 1% CPU, sodass Sie es nie bemerken.",
+            feat3_title: "Anpassbare Voreinstellungen", feat3_desc: "Leicht, Mittel, Stark — oder erstellen Sie Ihre eigene. Passen Sie Release-Zeit, Verstärkung und Zielpegel an.",
+            feat4_title: "App-Ausschlüsse", feat4_desc: "Schließen Sie bestimmte Apps von der Verarbeitung aus. Lassen Sie Ihren Musikplayer unberührt und gleichen Sie alles andere an.",
+            feat5_title: "Globaler Kurzbefehl", feat5_desc: "Schalten Sie die Angleichung mit einem anpassbaren Tastenkürzel von überall ein und aus.",
+            feat6_title: "Vollständig Privat", feat6_desc: "Alle Audioverarbeitung geschieht lokal auf Ihrem Mac. Keine Daten verlassen Ihr Gerät. Niemals.",
+            feat7_title: "Audio-Hotswap", feat7_desc: "Wechseln Sie nahtlos zwischen Ausgabegeräten. Ekual folgt Ihrem Audio ohne Unterbrechung.",
+            feat8_title: "Bluetooth-fähig", feat8_desc: "Volle Unterstützung für AirPods, Bluetooth-Kopfhörer und kabellose Lautsprecher. Funktioniert mit jedem Audiogerät, das macOS erkennt.",
+            feat9_title: "Startet mit Ihrem Mac", feat9_desc: "Startet automatisch bei der Anmeldung und läuft lautlos in der Menüleiste. Einmal einrichten, nie wieder daran denken.",
+            how_label: "Einrichtung", how_title: "So funktioniert's",
+            step1_title: "Installieren und starten", step1_desc: "Ekual lebt in Ihrer Menüleiste. Erteilen Sie einmal die Audio-Berechtigung und los geht's.",
+            step2_title: "Voreinstellung wählen", step2_desc: "Wählen Sie Leichte, Mittlere oder Starke Angleichung — oder stellen Sie Ihre eigenen Einstellungen mit den Reglern ein.",
+            step3_title: "Vergessen Sie es", step3_desc: "Ekual startet mit Ihrem Mac und arbeitet lautlos im Hintergrund. Konstante Lautstärke, null Aufwand.",
+            why_label: "Warum Ekual", why_title: "Warum Sie Lautstärke-Angleichung brauchen",
+            why_intro: "Jede App, Website und Mediendatei ist auf einem anderen Lautstärkepegel gemastert. Ihr Mac behebt das nicht — aber Ekual schon.",
+            why1_title: "Die Lautstärke-Achterbahn", why1_desc: "Sie schauen eine ruhige Dialogszene, dann knallt eine Werbung mit voller Lautstärke. Sie wechseln von einem Podcast zu einem YouTube-Video und suchen hektisch nach den Lautstärketasten. Verschiedene Apps, Websites, Streaming-Dienste — alle geben Audio auf völlig unterschiedlichen Pegeln aus. Ohne Angleichung passen Sie die Lautstärke ständig von Hand an.",
+            why2_title: "Wie Ekual es löst", why2_desc: "Ekual wendet Echtzeit-Dynamikkompression auf das Systemaudio Ihres Mac an. Es überwacht die Lautstärke des Audiostreams, hebt leise Töne an und senkt laute Töne auf einen konstanten Zielpegel. Das Ergebnis: Alles spielt auf einer angenehmen, gleichmäßigen Lautstärke.",
+            why3_title: "Windows hat es. macOS nicht.", why3_desc: "Windows bietet seit über einem Jahrzehnt eine \"Lautstärkeausgleich\"-Option in den Audioeinstellungen. macOS hat diese Funktion nie angeboten. Ekual füllt diese Lücke — und gibt Mac-Nutzern die gleiche Lautstärkekonsistenz, die Windows-Nutzer seit Jahren haben.",
+            requirements: "Erfordert macOS 14.2 oder neuer.",
+            refund_bold: "14-Tage-Geld-zurück-Garantie.", refund_text: "Nicht zufrieden? Kontaktieren Sie uns innerhalb von 14 Tagen für eine volle Rückerstattung, ohne Fragen.",
+            bottom_cta_title: "Konstante Lautstärke.\nNull Aufwand.", bottom_cta_subtitle: "Hören Sie auf, nach den Lautstärketasten zu greifen.",
+            footer_brand: "wird von CorvusDevs entwickelt.", footer_tagline: "Lautstärke-Angleichung für macOS — die Funktion, die Apple vergessen hat.",
+            footer_legal: "Rechtliches", footer_terms: "Nutzungsbedingungen", footer_privacy: "Datenschutz", footer_contact: "Kontakt",
+            footer_rights: "Alle Rechte vorbehalten.", footer_payments: "Zahlungen verarbeitet von",
+        },
+        pt: {
+            nav_features: "Recursos", nav_how: "Como funciona", nav_contact: "Contato",
+            tagline: "Equalização automática de volume para macOS. Sons baixos sobem, sons altos descem — em tempo real.",
+            cta: "Obter Ekual", hero_price: "$1.99",
+            ss_label1: "Interface limpa e minimalista", ss_label2: "Medidores de nível em tempo real",
+            feat_label: "Recursos", feat_title: "Tudo o que você precisa.\nNada que não precisa.", feat_subtitle: "Ekual funciona silenciosamente na sua barra de menus e gerencia toda a complexidade para você.",
+            feat1_title: "Processamento em Tempo Real", feat1_desc: "Equaliza o volume de todos os apps instantaneamente. Filmes, música, chamadas, jogos — tudo equilibrado automaticamente.",
+            feat2_title: "CPU Quase Zero", feat2_desc: "Projetado para eficiência. Funciona com menos de 1% de CPU para que você nunca perceba que está lá.",
+            feat3_title: "Presets Personalizáveis", feat3_desc: "Leve, Médio, Forte — ou crie o seu. Ajuste tempo de liberação, ganho e nível alvo.",
+            feat4_title: "Exclusão de Apps", feat4_desc: "Exclua apps específicos do processamento. Mantenha seu player de música intacto enquanto equaliza todo o resto.",
+            feat5_title: "Atalho Global", feat5_desc: "Ative ou desative a equalização com um atalho de teclado personalizável de qualquer lugar.",
+            feat6_title: "Totalmente Privado", feat6_desc: "Todo o processamento de áudio acontece localmente no seu Mac. Nenhum dado sai do seu dispositivo. Nunca.",
+            feat7_title: "Troca de Áudio em Tempo Real", feat7_desc: "Alterne entre dispositivos de saída instantaneamente. Ekual segue seu áudio sem interrupções.",
+            feat8_title: "Pronto para Bluetooth", feat8_desc: "Suporte completo para AirPods, fones Bluetooth e caixas de som sem fio. Funciona com todos os dispositivos de áudio que o macOS reconhece.",
+            feat9_title: "Inicia com seu Mac", feat9_desc: "Executa automaticamente ao fazer login e funciona silenciosamente na barra de menus. Configure uma vez, esqueça para sempre.",
+            how_label: "Configuração", how_title: "Como funciona",
+            step1_title: "Instale e execute", step1_desc: "Ekual vive na sua barra de menus. Conceda permissão de áudio uma vez e está pronto.",
+            step2_title: "Escolha um preset", step2_desc: "Escolha equalização Leve, Média ou Forte — ou ajuste suas próprias configurações com os controles.",
+            step3_title: "Esqueça dele", step3_desc: "Ekual inicia com seu Mac e trabalha silenciosamente em segundo plano. Volume consistente, zero esforço.",
+            why_label: "Por que Ekual", why_title: "Por que você precisa de equalização de volume",
+            why_intro: "Cada app, site e arquivo de mídia é masterizado em um nível de volume diferente. Seu Mac não corrige isso — mas o Ekual sim.",
+            why1_title: "A montanha-russa do volume", why1_desc: "Você está assistindo uma cena de diálogo tranquila, e então um anúncio explode em volume máximo. Você muda de um podcast para um vídeo do YouTube e procura desesperadamente as teclas de volume. Diferentes apps, sites, serviços de streaming — todos emitem áudio em níveis muito diferentes. Sem equalização, você está constantemente ajustando o volume manualmente.",
+            why2_title: "Como o Ekual resolve", why2_desc: "Ekual aplica compressão de faixa dinâmica em tempo real ao áudio do sistema do seu Mac. Ele monitora o volume do fluxo de áudio, aumenta sons baixos e diminui sons altos para atingir um nível alvo consistente. O resultado: tudo toca em um volume confortável e uniforme.",
+            why3_title: "Windows tem. macOS não.", why3_desc: "Windows inclui uma opção de \"Equalização de Volume\" em suas configurações de áudio há mais de uma década. macOS nunca ofereceu esse recurso. Ekual preenche essa lacuna — dando aos usuários de Mac a mesma consistência de volume que os usuários de Windows têm há anos.",
+            requirements: "Requer macOS 14.2 ou posterior.",
+            refund_bold: "Garantia de reembolso de 14 dias.", refund_text: "Não está satisfeito? Entre em contato conosco em 14 dias para um reembolso total, sem perguntas.",
+            bottom_cta_title: "Volume consistente.\nZero esforço.", bottom_cta_subtitle: "Pare de procurar as teclas de volume.",
+            footer_brand: "é feito pela CorvusDevs.", footer_tagline: "Equalização de volume para macOS — o recurso que a Apple esqueceu.",
+            footer_legal: "Legal", footer_terms: "Termos de Serviço", footer_privacy: "Política de Privacidade", footer_contact: "Contato",
+            footer_rights: "Todos os direitos reservados.", footer_payments: "Pagamentos processados por",
+        },
+        it: {
+            nav_features: "Funzionalità", nav_how: "Come funziona", nav_contact: "Contatti",
+            tagline: "Equalizzazione automatica del volume per macOS. I suoni bassi si alzano, i suoni forti si abbassano — in tempo reale.",
+            cta: "Ottieni Ekual", hero_price: "$1,99",
+            ss_label1: "Interfaccia pulita e minimale", ss_label2: "Indicatori di livello in tempo reale",
+            feat_label: "Funzionalità", feat_title: "Tutto ciò che serve.\nNiente di superfluo.", feat_subtitle: "Ekual funziona silenziosamente nella barra dei menu e gestisce tutta la complessità per te.",
+            feat1_title: "Elaborazione in Tempo Reale", feat1_desc: "Equalizza il volume di tutte le app istantaneamente. Film, musica, chiamate, giochi — tutto bilanciato automaticamente.",
+            feat2_title: "CPU Quasi Zero", feat2_desc: "Progettato per l'efficienza. Funziona a meno dell'1% di CPU così non ti accorgi mai che c'è.",
+            feat3_title: "Preset Personalizzabili", feat3_desc: "Leggero, Medio, Forte — o crea il tuo. Regola tempo di rilascio, guadagno e livello target.",
+            feat4_title: "Esclusione App", feat4_desc: "Escludi app specifiche dall'elaborazione. Mantieni il tuo lettore musicale intatto equalizzando tutto il resto.",
+            feat5_title: "Scorciatoia Globale", feat5_desc: "Attiva o disattiva l'equalizzazione con una scorciatoia da tastiera personalizzabile da qualsiasi posizione.",
+            feat6_title: "Completamente Privato", feat6_desc: "Tutta l'elaborazione audio avviene localmente sul tuo Mac. Nessun dato lascia il tuo dispositivo. Mai.",
+            feat7_title: "Hotswap Audio", feat7_desc: "Passa tra i dispositivi di uscita al volo. Ekual segue il tuo audio senza interruzioni.",
+            feat8_title: "Pronto per Bluetooth", feat8_desc: "Supporto completo per AirPods, cuffie Bluetooth e altoparlanti wireless. Funziona con ogni dispositivo audio riconosciuto da macOS.",
+            feat9_title: "Si avvia con il tuo Mac", feat9_desc: "Si avvia automaticamente all'accesso e funziona silenziosamente nella barra dei menu. Configuralo una volta, non pensarci più.",
+            how_label: "Configurazione", how_title: "Come funziona",
+            step1_title: "Installa e avvia", step1_desc: "Ekual vive nella tua barra dei menu. Concedi il permesso audio una volta e sei pronto.",
+            step2_title: "Scegli un preset", step2_desc: "Scegli equalizzazione Leggera, Media o Forte — o regola le tue impostazioni con i cursori.",
+            step3_title: "Dimenticalo", step3_desc: "Ekual si avvia con il tuo Mac e lavora silenziosamente in background. Volume costante, zero sforzo.",
+            why_label: "Perché Ekual", why_title: "Perché hai bisogno dell'equalizzazione del volume",
+            why_intro: "Ogni app, sito web e file multimediale è masterizzato a un livello di volume diverso. Il tuo Mac non lo corregge — ma Ekual sì.",
+            why1_title: "Le montagne russe del volume", why1_desc: "Stai guardando una scena di dialogo tranquilla, poi una pubblicità esplode a volume massimo. Passi da un podcast a un video YouTube e cerchi freneticamente i tasti del volume. App diverse, siti web diversi, servizi di streaming diversi — tutti emettono audio a livelli molto diversi. Senza equalizzazione, stai costantemente regolando il volume a mano.",
+            why2_title: "Come Ekual lo risolve", why2_desc: "Ekual applica la compressione della gamma dinamica in tempo reale all'audio di sistema del tuo Mac. Monitora il volume del flusso audio, alza i suoni bassi e abbassa quelli forti per raggiungere un livello target costante. Il risultato: tutto suona a un volume confortevole e uniforme.",
+            why3_title: "Windows ce l'ha. macOS no.", why3_desc: "Windows include un'opzione di \"Equalizzazione del volume\" nelle impostazioni audio da oltre un decennio. macOS non ha mai offerto questa funzione. Ekual colma questa lacuna — dando agli utenti Mac la stessa costanza di volume di cui gli utenti Windows godono da anni.",
+            requirements: "Richiede macOS 14.2 o successivo.",
+            refund_bold: "Garanzia di rimborso di 14 giorni.", refund_text: "Non soddisfatto? Contattaci entro 14 giorni per un rimborso completo, senza domande.",
+            bottom_cta_title: "Volume costante.\nZero sforzo.", bottom_cta_subtitle: "Smetti di cercare i tasti del volume.",
+            footer_brand: "è realizzato da CorvusDevs.", footer_tagline: "Equalizzazione del volume per macOS — la funzione che Apple ha dimenticato.",
+            footer_legal: "Legale", footer_terms: "Termini di Servizio", footer_privacy: "Informativa sulla Privacy", footer_contact: "Contatto",
+            footer_rights: "Tutti i diritti riservati.", footer_payments: "Pagamenti elaborati da",
+        },
+        ja: {
+            nav_features: "機能", nav_how: "使い方", nav_contact: "お問い合わせ",
+            tagline: "macOS用の自動ラウドネスイコライゼーション。小さな音は大きく、大きな音は小さく — リアルタイムで。",
+            cta: "Ekualを入手", hero_price: "$1.99",
+            ss_label1: "クリーンでミニマルなインターフェース", ss_label2: "リアルタイムレベルメーター",
+            feat_label: "機能", feat_title: "必要なものすべて。\n不要なものはゼロ。", feat_subtitle: "Ekualはメニューバーで静かに動作し、すべての複雑さを処理します。",
+            feat1_title: "リアルタイム処理", feat1_desc: "すべてのアプリの音量を瞬時にイコライズ。映画、音楽、通話、ゲーム — すべて自動的にバランス調整。",
+            feat2_title: "CPU負荷ほぼゼロ", feat2_desc: "効率性を追求した設計。CPU使用率1%未満で、存在を感じさせません。",
+            feat3_title: "カスタマイズ可能なプリセット", feat3_desc: "ライト、ミディアム、ヘビー — または独自のプリセットを作成。リリースタイム、ゲイン、ターゲットレベルを微調整。",
+            feat4_title: "アプリ除外", feat4_desc: "特定のアプリを処理から除外。音楽プレーヤーはそのままに、他のすべてをイコライズ。",
+            feat5_title: "グローバルショートカット", feat5_desc: "カスタマイズ可能なキーボードショートカットで、どこからでもイコライゼーションのオン/オフを切り替え。",
+            feat6_title: "完全にプライベート", feat6_desc: "すべてのオーディオ処理はMac上でローカルに行われます。データがデバイスから外に出ることはありません。",
+            feat7_title: "ホットスワップオーディオ", feat7_desc: "出力デバイスをシームレスに切り替え。Ekualはオーディオを途切れなく追従します。",
+            feat8_title: "Bluetooth対応", feat8_desc: "AirPods、Bluetoothヘッドフォン、ワイヤレススピーカーに完全対応。macOSが認識するすべてのオーディオデバイスで動作。",
+            feat9_title: "Macと一緒に起動", feat9_desc: "ログイン時に自動起動し、メニューバーで静かに動作。一度設定すれば、あとは忘れるだけ。",
+            how_label: "設定", how_title: "使い方",
+            step1_title: "インストールして起動", step1_desc: "Ekualはメニューバーに常駐。オーディオ権限を一度許可すれば準備完了。",
+            step2_title: "プリセットを選択", step2_desc: "ライト、ミディアム、ヘビーのイコライゼーションを選択 — またはスライダーで独自の設定を。",
+            step3_title: "あとはお任せ", step3_desc: "EkualはMacと共に起動し、バックグラウンドで静かに動作。一定の音量、手間いらず。",
+            why_label: "なぜEkual", why_title: "ラウドネスイコライゼーションが必要な理由",
+            why_intro: "すべてのアプリ、ウェブサイト、メディアファイルは異なる音量レベルでマスタリングされています。Macはこれを修正しません — でもEkualなら解決できます。",
+            why1_title: "音量のジェットコースター", why1_desc: "静かな会話シーンを見ていると、突然広告が大音量で流れます。ポッドキャストからYouTube動画に切り替えると、慌てて音量キーを探します。異なるアプリ、ウェブサイト、ストリーミングサービス — すべてが大きく異なる音量レベルで出力。イコライゼーションなしでは、常に手動で音量を調整し続けることになります。",
+            why2_title: "Ekualの解決方法", why2_desc: "EkualはMacのシステムオーディオにリアルタイムのダイナミックレンジ圧縮を適用します。オーディオストリームの音量を監視し、小さな音を上げ、大きな音を下げて一定のターゲットレベルに合わせます。結果：すべてが快適で均一な音量で再生されます。",
+            why3_title: "Windowsにはある。macOSにはない。", why3_desc: "Windowsは10年以上前からオーディオ設定に「ラウドネスイコライゼーション」オプションを搭載しています。macOSはこの機能を提供したことがありません。Ekualはそのギャップを埋めます — Windowsユーザーが長年享受してきた音量の一貫性を、よりクリーンな実装とより多くのコントロールでMacユーザーに提供します。",
+            requirements: "macOS 14.2以降が必要です。",
+            refund_bold: "14日間の返金保証。", refund_text: "ご満足いただけませんか？14日以内にお問い合わせいただければ、全額返金いたします。",
+            bottom_cta_title: "安定した音量。\n手間いらず。", bottom_cta_subtitle: "もう音量キーを探す必要はありません。",
+            footer_brand: "はCorvusDevsが開発。", footer_tagline: "macOS用ラウドネスイコライゼーション — Appleが忘れた機能。",
+            footer_legal: "法的情報", footer_terms: "利用規約", footer_privacy: "プライバシーポリシー", footer_contact: "お問い合わせ",
+            footer_rights: "全著作権所有。", footer_payments: "決済処理：",
+        },
+        zh: {
+            nav_features: "功能", nav_how: "工作原理", nav_contact: "联系我们",
+            tagline: "macOS 自动响度均衡。安静声音提升，嘈杂声音降低 — 实时处理。",
+            cta: "获取 Ekual", hero_price: "$1.99",
+            ss_label1: "简洁的界面", ss_label2: "实时电平表",
+            feat_label: "功能", feat_title: "你需要的一切。\n没有多余的。", feat_subtitle: "Ekual 在菜单栏中静默运行，为你处理所有复杂性。",
+            feat1_title: "实时处理", feat1_desc: "即时均衡所有应用的音量。电影、音乐、通话、游戏 — 全部自动平衡。",
+            feat2_title: "近零 CPU 占用", feat2_desc: "为效率而生。CPU 占用不到 1%，让你完全感觉不到它的存在。",
+            feat3_title: "可自定义预设", feat3_desc: "轻度、中度、重度 — 或创建你自己的。精细调整释放时间、增益和目标电平。",
+            feat4_title: "应用排除", feat4_desc: "排除特定应用的处理。保持音乐播放器不受影响，同时均衡其他所有应用。",
+            feat5_title: "全局快捷键", feat5_desc: "使用可自定义的键盘快捷键随时随地切换均衡开关。",
+            feat6_title: "完全私密", feat6_desc: "所有音频处理都在你的 Mac 本地进行。没有任何数据离开你的设备。永远不会。",
+            feat7_title: "热切换音频", feat7_desc: "即时切换输出设备。Ekual 无缝跟随你的音频输出。",
+            feat8_title: "蓝牙支持", feat8_desc: "完全支持 AirPods、蓝牙耳机和无线扬声器。兼容 macOS 识别的所有音频设备。",
+            feat9_title: "随 Mac 启动", feat9_desc: "登录时自动启动，在菜单栏中静默运行。设置一次，永远不用再管。",
+            how_label: "设置", how_title: "使用方法",
+            step1_title: "安装并启动", step1_desc: "Ekual 驻留在菜单栏中。授予一次音频权限即可开始使用。",
+            step2_title: "选择预设", step2_desc: "选择轻度、中度或重度均衡 — 或使用滑块自定义设置。",
+            step3_title: "然后忘掉它", step3_desc: "Ekual 随 Mac 启动，在后台静默工作。稳定音量，零操作。",
+            why_label: "为什么选择 Ekual", why_title: "为什么你需要响度均衡",
+            why_intro: "每个应用、网站和媒体文件都以不同的音量级别制作。你的 Mac 不会修复这个问题 — 但 Ekual 可以。",
+            why1_title: "音量过山车", why1_desc: "你正在看一段安静的对话场景，突然广告以全音量轰炸。你从播客切换到 YouTube 视频，手忙脚乱地寻找音量键。不同的应用、网站、流媒体服务 — 它们都以完全不同的音量级别输出音频。没有均衡，你就得不断手动调节音量。",
+            why2_title: "Ekual 如何解决", why2_desc: "Ekual 对你 Mac 的系统音频应用实时动态范围压缩。它监控音频流的响度，将安静的声音提升，将嘈杂的声音降低，以达到一致的目标级别。结果：一切都以舒适、均匀的音量播放。",
+            why3_title: "Windows 有。macOS 没有。", why3_desc: "Windows 在音频设置中包含\"响度均衡\"选项已超过十年。macOS 从未提供此功能。Ekual 填补了这一空白 — 以更清洁的实现和更多控制，为 Mac 用户提供 Windows 用户多年来一直享有的音量一致性。",
+            requirements: "需要 macOS 14.2 或更高版本。",
+            refund_bold: "14 天退款保证。", refund_text: "不满意？在 14 天内联系我们即可获得全额退款，无需任何理由。",
+            bottom_cta_title: "稳定音量。\n零操作。", bottom_cta_subtitle: "不再手忙脚乱找音量键。",
+            footer_brand: "由 CorvusDevs 开发。", footer_tagline: "macOS 响度均衡 — Apple 遗忘的功能。",
+            footer_legal: "法律", footer_terms: "服务条款", footer_privacy: "隐私政策", footer_contact: "联系我们",
+            footer_rights: "保留所有权利。", footer_payments: "付款处理方：",
+        },
+        ko: {
+            nav_features: "기능", nav_how: "작동 방식", nav_contact: "문의",
+            tagline: "macOS용 자동 음량 이퀄라이제이션. 작은 소리는 키우고, 큰 소리는 줄이고 — 실시간으로.",
+            cta: "Ekual 받기", hero_price: "$1.99",
+            ss_label1: "깔끔한 미니멀 인터페이스", ss_label2: "실시간 레벨 미터",
+            feat_label: "기능", feat_title: "필요한 것만.\n그 이상도 이하도 없이.", feat_subtitle: "Ekual은 메뉴 바에서 조용히 실행되며 모든 복잡성을 처리합니다.",
+            feat1_title: "실시간 처리", feat1_desc: "모든 앱의 음량을 즉시 이퀄라이즈. 영화, 음악, 통화, 게임 — 모두 자동으로 균형 조정.",
+            feat2_title: "거의 제로 CPU", feat2_desc: "효율성을 위해 설계. CPU 1% 미만으로 작동하여 존재를 느끼지 못합니다.",
+            feat3_title: "맞춤형 프리셋", feat3_desc: "라이트, 미디엄, 헤비 — 또는 나만의 프리셋 생성. 릴리스 타임, 게인, 타겟 레벨을 미세 조정.",
+            feat4_title: "앱 제외", feat4_desc: "특정 앱을 처리에서 제외. 음악 플레이어는 그대로 두고 나머지 모든 것을 이퀄라이즈.",
+            feat5_title: "글로벌 단축키", feat5_desc: "맞춤형 키보드 단축키로 어디서든 이퀄라이제이션을 켜고 끕니다.",
+            feat6_title: "완전한 프라이버시", feat6_desc: "모든 오디오 처리는 Mac에서 로컬로 이루어집니다. 어떤 데이터도 기기를 떠나지 않습니다.",
+            feat7_title: "핫스왑 오디오", feat7_desc: "출력 장치를 즉석에서 전환. Ekual이 끊김 없이 오디오를 따라갑니다.",
+            feat8_title: "블루투스 지원", feat8_desc: "AirPods, 블루투스 헤드폰, 무선 스피커 완벽 지원. macOS가 인식하는 모든 오디오 장치에서 작동.",
+            feat9_title: "Mac과 함께 시작", feat9_desc: "로그인 시 자동 실행되며 메뉴 바에서 조용히 작동. 한 번 설정하면 다시 생각할 필요 없습니다.",
+            how_label: "설정", how_title: "사용 방법",
+            step1_title: "설치하고 실행", step1_desc: "Ekual은 메뉴 바에 상주합니다. 오디오 권한을 한 번 허용하면 준비 완료.",
+            step2_title: "프리셋 선택", step2_desc: "라이트, 미디엄, 헤비 이퀄라이제이션 선택 — 또는 슬라이더로 직접 설정.",
+            step3_title: "잊어버리세요", step3_desc: "Ekual은 Mac과 함께 시작하여 백그라운드에서 조용히 작동. 일정한 음량, 제로 노력.",
+            why_label: "왜 Ekual인가", why_title: "음량 이퀄라이제이션이 필요한 이유",
+            why_intro: "모든 앱, 웹사이트, 미디어 파일은 서로 다른 음량 레벨로 마스터링됩니다. Mac은 이것을 고치지 않습니다 — 하지만 Ekual은 가능합니다.",
+            why1_title: "음량 롤러코스터", why1_desc: "조용한 대화 장면을 보고 있는데 광고가 최대 음량으로 터집니다. 팟캐스트에서 YouTube 영상으로 전환하면서 허겁지겁 음량 키를 찾습니다. 다른 앱, 웹사이트, 스트리밍 서비스 — 모두 완전히 다른 음량 레벨로 출력합니다. 이퀄라이제이션 없이는 계속 수동으로 음량을 조절해야 합니다.",
+            why2_title: "Ekual의 해결 방법", why2_desc: "Ekual은 Mac의 시스템 오디오에 실시간 다이내믹 레인지 압축을 적용합니다. 오디오 스트림의 음량을 모니터링하고, 작은 소리를 키우고 큰 소리를 줄여 일정한 타겟 레벨에 맞춥니다. 결과: 모든 것이 편안하고 균일한 음량으로 재생됩니다.",
+            why3_title: "Windows에는 있다. macOS에는 없다.", why3_desc: "Windows는 10년 이상 오디오 설정에 \"음량 이퀄라이제이션\" 옵션을 포함해 왔습니다. macOS는 이 기능을 제공한 적이 없습니다. Ekual이 그 간극을 메웁니다 — 더 깔끔한 구현과 더 많은 제어로 Windows 사용자가 수년간 누려온 음량 일관성을 Mac 사용자에게 제공합니다.",
+            requirements: "macOS 14.2 이상 필요.",
+            refund_bold: "14일 환불 보장.", refund_text: "만족하지 않으신가요? 14일 이내에 연락하시면 전액 환불해 드립니다.",
+            bottom_cta_title: "일정한 음량.\n제로 노력.", bottom_cta_subtitle: "더 이상 음량 키를 찾지 마세요.",
+            footer_brand: "는 CorvusDevs가 만듭니다.", footer_tagline: "macOS용 음량 이퀄라이제이션 — Apple이 잊은 기능.",
+            footer_legal: "법적 고지", footer_terms: "이용약관", footer_privacy: "개인정보 처리방침", footer_contact: "문의",
+            footer_rights: "모든 권리 보유.", footer_payments: "결제 처리:",
+        },
+        ru: {
+            nav_features: "Функции", nav_how: "Как это работает", nav_contact: "Контакты",
+            tagline: "Автоматическое выравнивание громкости для macOS. Тихие звуки громче, громкие тише — в реальном времени.",
+            cta: "Получить Ekual", hero_price: "$1,99",
+            ss_label1: "Чистый минималистичный интерфейс", ss_label2: "Индикаторы уровня в реальном времени",
+            feat_label: "Функции", feat_title: "Всё что нужно.\nНичего лишнего.", feat_subtitle: "Ekual тихо работает в строке меню и берёт на себя всю сложность.",
+            feat1_title: "Обработка в Реальном Времени", feat1_desc: "Мгновенно выравнивает громкость всех приложений. Фильмы, музыка, звонки, игры — всё сбалансировано автоматически.",
+            feat2_title: "Почти Нулевая Нагрузка CPU", feat2_desc: "Разработан для эффективности. Работает при менее 1% CPU, чтобы вы никогда не замечали его присутствия.",
+            feat3_title: "Настраиваемые Пресеты", feat3_desc: "Лёгкий, Средний, Сильный — или создайте свой. Настройте время отпускания, усиление и целевой уровень.",
+            feat4_title: "Исключение Приложений", feat4_desc: "Исключите конкретные приложения из обработки. Оставьте музыкальный плеер нетронутым, выравнивая всё остальное.",
+            feat5_title: "Глобальное Сочетание Клавиш", feat5_desc: "Включайте и выключайте выравнивание настраиваемым сочетанием клавиш из любого места.",
+            feat6_title: "Полная Конфиденциальность", feat6_desc: "Вся обработка аудио происходит локально на вашем Mac. Никакие данные не покидают ваше устройство. Никогда.",
+            feat7_title: "Горячая Замена Аудио", feat7_desc: "Переключайтесь между устройствами вывода на лету. Ekual плавно следует за вашим аудио.",
+            feat8_title: "Поддержка Bluetooth", feat8_desc: "Полная поддержка AirPods, Bluetooth-наушников и беспроводных колонок. Работает с каждым аудиоустройством, которое распознаёт macOS.",
+            feat9_title: "Запускается с вашим Mac", feat9_desc: "Автоматически запускается при входе в систему и тихо работает в строке меню. Настройте один раз, больше не думайте об этом.",
+            how_label: "Настройка", how_title: "Как это работает",
+            step1_title: "Установите и запустите", step1_desc: "Ekual живёт в вашей строке меню. Предоставьте разрешение на аудио один раз — и всё готово.",
+            step2_title: "Выберите пресет", step2_desc: "Выберите Лёгкое, Среднее или Сильное выравнивание — или настройте параметры ползунками.",
+            step3_title: "Забудьте о нём", step3_desc: "Ekual запускается с вашим Mac и тихо работает в фоне. Стабильная громкость, ноль усилий.",
+            why_label: "Почему Ekual", why_title: "Зачем нужно выравнивание громкости",
+            why_intro: "Каждое приложение, сайт и медиафайл мастерится на разном уровне громкости. Ваш Mac не исправляет это — но Ekual исправляет.",
+            why1_title: "Американские горки громкости", why1_desc: "Вы смотрите тихую диалоговую сцену, а затем реклама бьёт на полную громкость. Вы переключаетесь с подкаста на видео YouTube и лихорадочно ищете клавиши громкости. Разные приложения, сайты, стриминговые сервисы — все выводят аудио на совершенно разных уровнях. Без выравнивания вы постоянно регулируете громкость вручную.",
+            why2_title: "Как Ekual решает проблему", why2_desc: "Ekual применяет сжатие динамического диапазона в реальном времени к системному аудио вашего Mac. Он отслеживает громкость аудиопотока, усиливает тихие звуки и приглушает громкие до стабильного целевого уровня. Результат: всё воспроизводится на комфортной, равномерной громкости.",
+            why3_title: "В Windows есть. В macOS — нет.", why3_desc: "Windows включает опцию \"Выравнивание громкости\" в настройках аудио уже более десяти лет. macOS никогда не предлагала эту функцию. Ekual заполняет этот пробел — давая пользователям Mac ту же стабильность громкости, которой пользователи Windows наслаждаются годами, с более чистой реализацией и большим контролем.",
+            requirements: "Требуется macOS 14.2 или новее.",
+            refund_bold: "14-дневная гарантия возврата.", refund_text: "Не удовлетворены? Свяжитесь с нами в течение 14 дней для полного возврата, без вопросов.",
+            bottom_cta_title: "Стабильная громкость.\nНоль усилий.", bottom_cta_subtitle: "Перестаньте тянуться к клавишам громкости.",
+            footer_brand: "создан CorvusDevs.", footer_tagline: "Выравнивание громкости для macOS — функция, которую Apple забыла.",
+            footer_legal: "Правовая информация", footer_terms: "Условия использования", footer_privacy: "Политика конфиденциальности", footer_contact: "Контакты",
+            footer_rights: "Все права защищены.", footer_payments: "Платежи обрабатывает",
+        },
+    };
+
+    const langLabels = {en:"EN",es:"ES",fr:"FR",de:"DE",pt:"PT",it:"IT",ja:"JA",zh:"ZH",ko:"KO",ru:"RU"};
+
+    function setLanguage(lang) {
+        const strings = T[lang] || T.en;
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            if (strings[key]) {
+                if (key === "feat_title" || key === "bottom_cta_title") {
+                    el.innerHTML = strings[key].replace(/\n/g, "<br>");
+                } else {
+                    el.textContent = strings[key];
+                }
+            }
+        });
+        document.documentElement.lang = lang;
+        localStorage.setItem("ekual-lang", lang);
+        document.getElementById("langBtn").textContent = langLabels[lang] || langLabels.en;
+        document.querySelectorAll("#langMenu button").forEach(b => {
+            b.classList.toggle("active", b.dataset.lang === lang);
+        });
+        document.getElementById("langMenu").classList.remove("open");
+    }
+
+    document.getElementById("langBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.getElementById("langMenu").classList.toggle("open");
+    });
+    document.getElementById("langMenu").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-lang]");
+        if (btn) setLanguage(btn.dataset.lang);
+    });
+    document.addEventListener("click", () => document.getElementById("langMenu").classList.remove("open"));
+
+    (function() {
+        const saved = localStorage.getItem("ekual-lang");
+        if (saved && T[saved]) { setLanguage(saved); return; }
+        const browserLang = (navigator.language || "en").split("-")[0];
+        if (T[browserLang]) setLanguage(browserLang);
+    })();
+    </script>
+
+    <!-- Scroll Reveal -->
+    <script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "36ef79985b2045c4b271333fe4e427ab"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

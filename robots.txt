@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://corvusdevs.github.io/Ekual/sitemap.xml
