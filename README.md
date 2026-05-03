@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icon.png" width="128" height="128" alt="Ekual icon" style="border-radius: 22%;">
+  <img src="https://corvusdevs.github.io/Ekual/icon.png" width="128" height="128" alt="Ekual icon">
   <h1>Ekual</h1>
   <p><strong>The loudness equalization macOS never had</strong></p>
   <p>
@@ -10,7 +10,6 @@
   <p>
     <img src="https://img.shields.io/badge/macOS-14.2+-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS 14.2+">
     <img src="https://img.shields.io/badge/Languages-10-4CAF50?style=flat-square" alt="10 Languages">
-    <img src="https://img.shields.io/badge/Price-$1.99-007AFF?style=flat-square" alt="$1.99">
   </p>
   <p>
     <a href="https://corvusdevs.github.io/Ekual/">Website</a>
@@ -22,7 +21,7 @@
 Quiet sounds up, loud sounds down — in real time. Ekual brings automatic loudness equalization to macOS, balancing volume across all your apps so you never have to reach for the volume slider again. Movies, music, calls, games — everything stays at a comfortable level.
 
 <div align="center">
-  <img src="screenshot.png" width="480" alt="Ekual screenshot">
+  <img src="https://corvusdevs.github.io/Ekual/screenshot.png" width="480" alt="Ekual screenshot">
 </div>
 
 ## Features
