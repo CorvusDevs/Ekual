@@ -1,0 +1,14 @@
+name = "ekual-license"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+# KV namespace for storing validated licenses
+# Create with: wrangler kv namespace create LICENSES
+[[kv_namespaces]]
+binding = "LICENSES"
+id = "1c2572719040451ca654e92fad525580"
+
+# Environment variables (set via `wrangler secret put <NAME>`)
+# PADDLE_WEBHOOK_SECRET  — from Paddle Dashboard > Developer Tools > Notifications
+# PADDLE_API_KEY         — (no longer needed, email comes from webhook payload)
+# RESEND_API_KEY         — from Resend dashboard
