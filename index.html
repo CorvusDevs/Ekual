@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ekual — Loudness Equalization for macOS | The Feature Apple Forgot</title>
-    <meta name="description" content="Ekual brings automatic loudness equalization to macOS — the feature Windows has had for years. Balances volume across all apps in real-time. $1.99, menu bar app, near-zero CPU.">
+    <meta name="description" content="Ekual brings automatic loudness equalization to macOS — the feature Windows has had for years. Balances volume across all apps in real-time. Free 14-day trial, menu bar app, near-zero CPU.">
     <meta name="keywords" content="loudness equalization, macOS, volume balancing, audio equalizer, mac menu bar app, dynamic range compression, volume leveling, ekual">
     <link rel="canonical" href="https://corvusdevs.github.io/Ekual/">
     <link rel="alternate" hreflang="en" href="https://corvusdevs.github.io/Ekual/">
@@ -22,13 +22,13 @@
     <meta property="og:site_name" content="CorvusDevs">
     <meta property="og:url" content="https://corvusdevs.github.io/Ekual/">
     <meta property="og:title" content="Ekual — The Loudness Equalization macOS Never Had">
-    <meta property="og:description" content="Windows has had loudness equalization for over a decade. macOS still doesn't. Ekual fixes that — automatic volume balancing across every app, in real time. $1.99.">
+    <meta property="og:description" content="Windows has had loudness equalization for over a decade. macOS still doesn't. Ekual fixes that — automatic volume balancing across every app, in real time. Free 14-day trial.">
     <meta property="og:image" content="https://corvusdevs.github.io/Ekual/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Ekual — The Loudness Equalization macOS Never Had">
-    <meta name="twitter:description" content="Windows has had it for years. Now your Mac does too. Automatic volume balancing across every app, real-time, menu bar. $1.99.">
+    <meta name="twitter:description" content="Windows has had it for years. Now your Mac does too. Automatic volume balancing across every app, real-time, menu bar. Free 14-day trial.">
     <meta name="twitter:image" content="https://corvusdevs.github.io/Ekual/og-image.png">
     <meta name="robots" content="index, follow">
     <script type="application/ld+json">
@@ -45,9 +45,10 @@
         "url": "https://corvusdevs.github.io/Ekual/",
         "offers": {
             "@type": "Offer",
-            "price": "1.99",
+            "price": "0",
             "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock"
+            "availability": "https://schema.org/InStock",
+            "description": "Free 14-day trial, then one-time purchase"
         },
         "author": {
             "@type": "Organization",
@@ -542,8 +543,8 @@
         <img src="icon.png" alt="Ekual icon" class="hero-icon">
         <h1>Ekual</h1>
         <p class="tagline" data-i18n="tagline">Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.</p>
-        <button class="cta-button" onclick="openCheckout()" data-i18n="cta">Get Ekual</button>
-        <p class="hero-price" data-i18n="hero_price">$1.99</p>
+        <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="cta-button" data-i18n="cta">Download Free</a>
+        <p class="hero-price" data-i18n="hero_price">14-day free trial &middot; then one-time purchase</p>
     </section>
 
     <!-- Screenshots -->
@@ -671,17 +672,17 @@
         <p data-i18n="requirements">Requires macOS 14.2 or later.</p>
     </section>
 
-    <!-- Refund -->
+    <!-- Trial Banner -->
     <section class="refund-banner">
-        <p><strong data-i18n="refund_bold">14-day money-back guarantee.</strong> <span data-i18n="refund_text">Not satisfied? Contact us within 14 days for a full refund, no questions asked.</span></p>
+        <p><strong data-i18n="refund_bold">14-day free trial.</strong> <span data-i18n="refund_text">Download and use all features free for 14 days. No credit card required.</span></p>
     </section>
 
     <!-- Bottom CTA -->
     <section class="bottom-cta">
         <h2 class="gradient-text reveal" data-i18n="bottom_cta_title">Consistent volume.<br>Zero effort.</h2>
         <p data-i18n="bottom_cta_subtitle">Stop reaching for the volume keys.</p>
-        <button class="cta-button" onclick="openCheckout()" data-i18n="cta">Get Ekual</button>
-        <p class="hero-price" data-i18n="hero_price">$1.99</p>
+        <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="cta-button" data-i18n="cta">Download Free</a>
+        <p class="hero-price" data-i18n="hero_price">14-day free trial &middot; then one-time purchase</p>
     </section>
 
     <!-- Footer -->
@@ -727,7 +728,7 @@
         en: {
             nav_features: "Features", nav_how: "How it works", nav_contact: "Contact",
             tagline: "Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.",
-            cta: "Get Ekual", hero_price: "$1.99",
+            cta: "Download Free", hero_price: "14-day free trial · then one-time purchase",
             ss_label1: "Clean, minimal interface", ss_label2: "Real-time level meters",
             feat_label: "Features", feat_title: "Everything you need.\nNothing you don't.", feat_subtitle: "Ekual runs silently in your menu bar and handles all the complexity for you.",
             feat1_title: "Real-Time Processing", feat1_desc: "Equalizes volume across all apps instantly. Movies, music, calls, games — all balanced automatically.",
@@ -749,7 +750,7 @@
             why2_title: "How Ekual solves it", why2_desc: "Ekual applies real-time dynamic range compression to your Mac's system audio. It monitors the loudness of the audio stream, brings quiet sounds up and loud sounds down to meet a consistent target level. The result: everything plays at a comfortable, even volume — whether it's a whisper-quiet video call or a booming action movie trailer.",
             why3_title: "Windows has it. macOS doesn't.", why3_desc: "Windows has included a \"Loudness Equalization\" option in its audio settings for over a decade. macOS has never offered this feature. Ekual fills that gap — giving Mac users the same volume consistency that Windows users have had for years, with a cleaner implementation and more control.",
             requirements: "Requires macOS 14.2 or later.",
-            refund_bold: "14-day money-back guarantee.", refund_text: "Not satisfied? Contact us within 14 days for a full refund, no questions asked.",
+            refund_bold: "14-day free trial.", refund_text: "Download and use all features free for 14 days. No credit card required.",
             bottom_cta_title: "Consistent volume.\nZero effort.", bottom_cta_subtitle: "Stop reaching for the volume keys.",
             footer_brand: "is made by CorvusDevs.", footer_tagline: "Loudness equalization for macOS — the feature Apple forgot.",
             footer_legal: "Legal", footer_terms: "Terms of Service", footer_privacy: "Privacy Policy", footer_contact: "Contact",
@@ -758,7 +759,7 @@
         es: {
             nav_features: "Funciones", nav_how: "Cómo funciona", nav_contact: "Contacto",
             tagline: "Ecualización de volumen automática para macOS. Sonidos bajos más altos, sonidos fuertes más bajos — en tiempo real.",
-            cta: "Obtener Ekual", hero_price: "$1.99",
+            cta: "Descargar Gratis", hero_price: "14 días de prueba gratis · luego compra única",
             ss_label1: "Interfaz limpia y minimalista", ss_label2: "Medidores de nivel en tiempo real",
             feat_label: "Funciones", feat_title: "Todo lo que necesitas.\nNada que no.", feat_subtitle: "Ekual se ejecuta silenciosamente en tu barra de menú y gestiona toda la complejidad por ti.",
             feat1_title: "Procesamiento en Tiempo Real", feat1_desc: "Ecualiza el volumen en todas las apps al instante. Películas, música, llamadas, juegos — todo equilibrado automáticamente.",
@@ -780,7 +781,7 @@
             why2_title: "Cómo Ekual lo soluciona", why2_desc: "Ekual aplica compresión de rango dinámico en tiempo real al audio del sistema de tu Mac. Monitorea el volumen del audio, sube los sonidos bajos y baja los fuertes hasta un nivel objetivo consistente. El resultado: todo suena a un volumen cómodo y uniforme — ya sea una videollamada silenciosa o un tráiler de película de acción.",
             why3_title: "Windows lo tiene. macOS no.", why3_desc: "Windows incluye una opción de \"Ecualización de volumen\" en su configuración de audio desde hace más de una década. macOS nunca ha ofrecido esta función. Ekual llena ese vacío — dando a los usuarios de Mac la misma consistencia de volumen que los usuarios de Windows han tenido durante años, con una implementación más limpia y más control.",
             requirements: "Requiere macOS 14.2 o posterior.",
-            refund_bold: "Garantía de devolución de 14 días.", refund_text: "¿No estás satisfecho? Contáctanos en los primeros 14 días para un reembolso completo, sin preguntas.",
+            refund_bold: "14 días de prueba gratis.", refund_text: "Descarga y usa todas las funciones gratis durante 14 días. Sin tarjeta de crédito.",
             bottom_cta_title: "Volumen consistente.\nCero esfuerzo.", bottom_cta_subtitle: "Deja de buscar las teclas de volumen.",
             footer_brand: "está hecho por CorvusDevs.", footer_tagline: "Ecualización de volumen para macOS — la función que Apple olvidó.",
             footer_legal: "Legal", footer_terms: "Términos de Servicio", footer_privacy: "Política de Privacidad", footer_contact: "Contacto",
@@ -789,7 +790,7 @@
         fr: {
             nav_features: "Fonctionnalités", nav_how: "Comment ça marche", nav_contact: "Contact",
             tagline: "Égalisation automatique du volume pour macOS. Les sons faibles montent, les sons forts baissent — en temps réel.",
-            cta: "Obtenir Ekual", hero_price: "1,99 $",
+            cta: "Télécharger Gratuitement", hero_price: "Essai gratuit de 14 jours · puis achat unique",
             ss_label1: "Interface épurée et minimale", ss_label2: "Indicateurs de niveau en temps réel",
             feat_label: "Fonctionnalités", feat_title: "Tout ce qu'il vous faut.\nRien de superflu.", feat_subtitle: "Ekual fonctionne silencieusement dans votre barre de menus et gère toute la complexité pour vous.",
             feat1_title: "Traitement en Temps Réel", feat1_desc: "Égalise le volume de toutes les apps instantanément. Films, musique, appels, jeux — tout est équilibré automatiquement.",
@@ -811,7 +812,7 @@
             why2_title: "Comment Ekual résout le problème", why2_desc: "Ekual applique une compression dynamique en temps réel à l'audio système de votre Mac. Il surveille le volume du flux audio, monte les sons faibles et baisse les sons forts pour atteindre un niveau cible constant. Le résultat : tout est diffusé à un volume confortable et uniforme.",
             why3_title: "Windows l'a. macOS non.", why3_desc: "Windows inclut une option d'\"Égalisation du volume\" dans ses paramètres audio depuis plus d'une décennie. macOS n'a jamais proposé cette fonction. Ekual comble cette lacune — offrant aux utilisateurs Mac la même constance de volume dont les utilisateurs Windows bénéficient depuis des années.",
             requirements: "Nécessite macOS 14.2 ou ultérieur.",
-            refund_bold: "Garantie de remboursement de 14 jours.", refund_text: "Pas satisfait ? Contactez-nous dans les 14 jours pour un remboursement complet, sans question.",
+            refund_bold: "Essai gratuit de 14 jours.", refund_text: "Téléchargez et utilisez toutes les fonctionnalités gratuitement pendant 14 jours. Sans carte de crédit.",
             bottom_cta_title: "Volume constant.\nZéro effort.", bottom_cta_subtitle: "Arrêtez de chercher les touches de volume.",
             footer_brand: "est créé par CorvusDevs.", footer_tagline: "Égalisation du volume pour macOS — la fonction qu'Apple a oubliée.",
             footer_legal: "Juridique", footer_terms: "Conditions d'utilisation", footer_privacy: "Politique de confidentialité", footer_contact: "Contact",
@@ -820,7 +821,7 @@
         de: {
             nav_features: "Funktionen", nav_how: "So funktioniert's", nav_contact: "Kontakt",
             tagline: "Automatische Lautstärke-Angleichung für macOS. Leise Töne lauter, laute Töne leiser — in Echtzeit.",
-            cta: "Ekual holen", hero_price: "1,99 $",
+            cta: "Kostenlos herunterladen", hero_price: "14 Tage kostenlos testen · dann einmaliger Kauf",
             ss_label1: "Klare, minimale Oberfläche", ss_label2: "Echtzeit-Pegelanzeigen",
             feat_label: "Funktionen", feat_title: "Alles was Sie brauchen.\nNichts was Sie nicht brauchen.", feat_subtitle: "Ekual läuft lautlos in Ihrer Menüleiste und übernimmt die gesamte Komplexität für Sie.",
             feat1_title: "Echtzeit-Verarbeitung", feat1_desc: "Gleicht die Lautstärke aller Apps sofort an. Filme, Musik, Anrufe, Spiele — alles automatisch ausgeglichen.",
@@ -842,7 +843,7 @@
             why2_title: "Wie Ekual es löst", why2_desc: "Ekual wendet Echtzeit-Dynamikkompression auf das Systemaudio Ihres Mac an. Es überwacht die Lautstärke des Audiostreams, hebt leise Töne an und senkt laute Töne auf einen konstanten Zielpegel. Das Ergebnis: Alles spielt auf einer angenehmen, gleichmäßigen Lautstärke.",
             why3_title: "Windows hat es. macOS nicht.", why3_desc: "Windows bietet seit über einem Jahrzehnt eine \"Lautstärkeausgleich\"-Option in den Audioeinstellungen. macOS hat diese Funktion nie angeboten. Ekual füllt diese Lücke — und gibt Mac-Nutzern die gleiche Lautstärkekonsistenz, die Windows-Nutzer seit Jahren haben.",
             requirements: "Erfordert macOS 14.2 oder neuer.",
-            refund_bold: "14-Tage-Geld-zurück-Garantie.", refund_text: "Nicht zufrieden? Kontaktieren Sie uns innerhalb von 14 Tagen für eine volle Rückerstattung, ohne Fragen.",
+            refund_bold: "14 Tage kostenlos testen.", refund_text: "Laden Sie herunter und nutzen Sie alle Funktionen 14 Tage lang kostenlos. Keine Kreditkarte erforderlich.",
             bottom_cta_title: "Konstante Lautstärke.\nNull Aufwand.", bottom_cta_subtitle: "Hören Sie auf, nach den Lautstärketasten zu greifen.",
             footer_brand: "wird von CorvusDevs entwickelt.", footer_tagline: "Lautstärke-Angleichung für macOS — die Funktion, die Apple vergessen hat.",
             footer_legal: "Rechtliches", footer_terms: "Nutzungsbedingungen", footer_privacy: "Datenschutz", footer_contact: "Kontakt",
@@ -851,7 +852,7 @@
         pt: {
             nav_features: "Recursos", nav_how: "Como funciona", nav_contact: "Contato",
             tagline: "Equalização automática de volume para macOS. Sons baixos sobem, sons altos descem — em tempo real.",
-            cta: "Obter Ekual", hero_price: "$1.99",
+            cta: "Baixar Grátis", hero_price: "14 dias de teste grátis · depois compra única",
             ss_label1: "Interface limpa e minimalista", ss_label2: "Medidores de nível em tempo real",
             feat_label: "Recursos", feat_title: "Tudo o que você precisa.\nNada que não precisa.", feat_subtitle: "Ekual funciona silenciosamente na sua barra de menus e gerencia toda a complexidade para você.",
             feat1_title: "Processamento em Tempo Real", feat1_desc: "Equaliza o volume de todos os apps instantaneamente. Filmes, música, chamadas, jogos — tudo equilibrado automaticamente.",
@@ -873,7 +874,7 @@
             why2_title: "Como o Ekual resolve", why2_desc: "Ekual aplica compressão de faixa dinâmica em tempo real ao áudio do sistema do seu Mac. Ele monitora o volume do fluxo de áudio, aumenta sons baixos e diminui sons altos para atingir um nível alvo consistente. O resultado: tudo toca em um volume confortável e uniforme.",
             why3_title: "Windows tem. macOS não.", why3_desc: "Windows inclui uma opção de \"Equalização de Volume\" em suas configurações de áudio há mais de uma década. macOS nunca ofereceu esse recurso. Ekual preenche essa lacuna — dando aos usuários de Mac a mesma consistência de volume que os usuários de Windows têm há anos.",
             requirements: "Requer macOS 14.2 ou posterior.",
-            refund_bold: "Garantia de reembolso de 14 dias.", refund_text: "Não está satisfeito? Entre em contato conosco em 14 dias para um reembolso total, sem perguntas.",
+            refund_bold: "14 dias de teste grátis.", refund_text: "Baixe e use todos os recursos gratuitamente por 14 dias. Sem cartão de crédito.",
             bottom_cta_title: "Volume consistente.\nZero esforço.", bottom_cta_subtitle: "Pare de procurar as teclas de volume.",
             footer_brand: "é feito pela CorvusDevs.", footer_tagline: "Equalização de volume para macOS — o recurso que a Apple esqueceu.",
             footer_legal: "Legal", footer_terms: "Termos de Serviço", footer_privacy: "Política de Privacidade", footer_contact: "Contato",
@@ -882,7 +883,7 @@
         it: {
             nav_features: "Funzionalità", nav_how: "Come funziona", nav_contact: "Contatti",
             tagline: "Equalizzazione automatica del volume per macOS. I suoni bassi si alzano, i suoni forti si abbassano — in tempo reale.",
-            cta: "Ottieni Ekual", hero_price: "$1,99",
+            cta: "Scarica Gratis", hero_price: "14 giorni di prova gratuita · poi acquisto unico",
             ss_label1: "Interfaccia pulita e minimale", ss_label2: "Indicatori di livello in tempo reale",
             feat_label: "Funzionalità", feat_title: "Tutto ciò che serve.\nNiente di superfluo.", feat_subtitle: "Ekual funziona silenziosamente nella barra dei menu e gestisce tutta la complessità per te.",
             feat1_title: "Elaborazione in Tempo Reale", feat1_desc: "Equalizza il volume di tutte le app istantaneamente. Film, musica, chiamate, giochi — tutto bilanciato automaticamente.",
@@ -904,7 +905,7 @@
             why2_title: "Come Ekual lo risolve", why2_desc: "Ekual applica la compressione della gamma dinamica in tempo reale all'audio di sistema del tuo Mac. Monitora il volume del flusso audio, alza i suoni bassi e abbassa quelli forti per raggiungere un livello target costante. Il risultato: tutto suona a un volume confortevole e uniforme.",
             why3_title: "Windows ce l'ha. macOS no.", why3_desc: "Windows include un'opzione di \"Equalizzazione del volume\" nelle impostazioni audio da oltre un decennio. macOS non ha mai offerto questa funzione. Ekual colma questa lacuna — dando agli utenti Mac la stessa costanza di volume di cui gli utenti Windows godono da anni.",
             requirements: "Richiede macOS 14.2 o successivo.",
-            refund_bold: "Garanzia di rimborso di 14 giorni.", refund_text: "Non soddisfatto? Contattaci entro 14 giorni per un rimborso completo, senza domande.",
+            refund_bold: "14 giorni di prova gratuita.", refund_text: "Scarica e usa tutte le funzionalità gratuitamente per 14 giorni. Nessuna carta di credito richiesta.",
             bottom_cta_title: "Volume costante.\nZero sforzo.", bottom_cta_subtitle: "Smetti di cercare i tasti del volume.",
             footer_brand: "è realizzato da CorvusDevs.", footer_tagline: "Equalizzazione del volume per macOS — la funzione che Apple ha dimenticato.",
             footer_legal: "Legale", footer_terms: "Termini di Servizio", footer_privacy: "Informativa sulla Privacy", footer_contact: "Contatto",
@@ -913,7 +914,7 @@
         ja: {
             nav_features: "機能", nav_how: "使い方", nav_contact: "お問い合わせ",
             tagline: "macOS用の自動ラウドネスイコライゼーション。小さな音は大きく、大きな音は小さく — リアルタイムで。",
-            cta: "Ekualを入手", hero_price: "$1.99",
+            cta: "無料ダウンロード", hero_price: "14日間の無料トライアル · その後ワンタイム購入",
             ss_label1: "クリーンでミニマルなインターフェース", ss_label2: "リアルタイムレベルメーター",
             feat_label: "機能", feat_title: "必要なものすべて。\n不要なものはゼロ。", feat_subtitle: "Ekualはメニューバーで静かに動作し、すべての複雑さを処理します。",
             feat1_title: "リアルタイム処理", feat1_desc: "すべてのアプリの音量を瞬時にイコライズ。映画、音楽、通話、ゲーム — すべて自動的にバランス調整。",
@@ -935,7 +936,7 @@
             why2_title: "Ekualの解決方法", why2_desc: "EkualはMacのシステムオーディオにリアルタイムのダイナミックレンジ圧縮を適用します。オーディオストリームの音量を監視し、小さな音を上げ、大きな音を下げて一定のターゲットレベルに合わせます。結果：すべてが快適で均一な音量で再生されます。",
             why3_title: "Windowsにはある。macOSにはない。", why3_desc: "Windowsは10年以上前からオーディオ設定に「ラウドネスイコライゼーション」オプションを搭載しています。macOSはこの機能を提供したことがありません。Ekualはそのギャップを埋めます — Windowsユーザーが長年享受してきた音量の一貫性を、よりクリーンな実装とより多くのコントロールでMacユーザーに提供します。",
             requirements: "macOS 14.2以降が必要です。",
-            refund_bold: "14日間の返金保証。", refund_text: "ご満足いただけませんか？14日以内にお問い合わせいただければ、全額返金いたします。",
+            refund_bold: "14日間の無料トライアル。", refund_text: "ダウンロードして14日間すべての機能を無料でお使いいただけます。クレジットカード不要。",
             bottom_cta_title: "安定した音量。\n手間いらず。", bottom_cta_subtitle: "もう音量キーを探す必要はありません。",
             footer_brand: "はCorvusDevsが開発。", footer_tagline: "macOS用ラウドネスイコライゼーション — Appleが忘れた機能。",
             footer_legal: "法的情報", footer_terms: "利用規約", footer_privacy: "プライバシーポリシー", footer_contact: "お問い合わせ",
@@ -944,7 +945,7 @@
         zh: {
             nav_features: "功能", nav_how: "工作原理", nav_contact: "联系我们",
             tagline: "macOS 自动响度均衡。安静声音提升，嘈杂声音降低 — 实时处理。",
-            cta: "获取 Ekual", hero_price: "$1.99",
+            cta: "免费下载", hero_price: "14 天免费试用 · 之后一次性购买",
             ss_label1: "简洁的界面", ss_label2: "实时电平表",
             feat_label: "功能", feat_title: "你需要的一切。\n没有多余的。", feat_subtitle: "Ekual 在菜单栏中静默运行，为你处理所有复杂性。",
             feat1_title: "实时处理", feat1_desc: "即时均衡所有应用的音量。电影、音乐、通话、游戏 — 全部自动平衡。",
@@ -966,7 +967,7 @@
             why2_title: "Ekual 如何解决", why2_desc: "Ekual 对你 Mac 的系统音频应用实时动态范围压缩。它监控音频流的响度，将安静的声音提升，将嘈杂的声音降低，以达到一致的目标级别。结果：一切都以舒适、均匀的音量播放。",
             why3_title: "Windows 有。macOS 没有。", why3_desc: "Windows 在音频设置中包含\"响度均衡\"选项已超过十年。macOS 从未提供此功能。Ekual 填补了这一空白 — 以更清洁的实现和更多控制，为 Mac 用户提供 Windows 用户多年来一直享有的音量一致性。",
             requirements: "需要 macOS 14.2 或更高版本。",
-            refund_bold: "14 天退款保证。", refund_text: "不满意？在 14 天内联系我们即可获得全额退款，无需任何理由。",
+            refund_bold: "14 天免费试用。", refund_text: "下载后即可免费使用所有功能 14 天。无需信用卡。",
             bottom_cta_title: "稳定音量。\n零操作。", bottom_cta_subtitle: "不再手忙脚乱找音量键。",
             footer_brand: "由 CorvusDevs 开发。", footer_tagline: "macOS 响度均衡 — Apple 遗忘的功能。",
             footer_legal: "法律", footer_terms: "服务条款", footer_privacy: "隐私政策", footer_contact: "联系我们",
@@ -975,7 +976,7 @@
         ko: {
             nav_features: "기능", nav_how: "작동 방식", nav_contact: "문의",
             tagline: "macOS용 자동 음량 이퀄라이제이션. 작은 소리는 키우고, 큰 소리는 줄이고 — 실시간으로.",
-            cta: "Ekual 받기", hero_price: "$1.99",
+            cta: "무료 다운로드", hero_price: "14일 무료 체험 · 이후 일회성 구매",
             ss_label1: "깔끔한 미니멀 인터페이스", ss_label2: "실시간 레벨 미터",
             feat_label: "기능", feat_title: "필요한 것만.\n그 이상도 이하도 없이.", feat_subtitle: "Ekual은 메뉴 바에서 조용히 실행되며 모든 복잡성을 처리합니다.",
             feat1_title: "실시간 처리", feat1_desc: "모든 앱의 음량을 즉시 이퀄라이즈. 영화, 음악, 통화, 게임 — 모두 자동으로 균형 조정.",
@@ -997,7 +998,7 @@
             why2_title: "Ekual의 해결 방법", why2_desc: "Ekual은 Mac의 시스템 오디오에 실시간 다이내믹 레인지 압축을 적용합니다. 오디오 스트림의 음량을 모니터링하고, 작은 소리를 키우고 큰 소리를 줄여 일정한 타겟 레벨에 맞춥니다. 결과: 모든 것이 편안하고 균일한 음량으로 재생됩니다.",
             why3_title: "Windows에는 있다. macOS에는 없다.", why3_desc: "Windows는 10년 이상 오디오 설정에 \"음량 이퀄라이제이션\" 옵션을 포함해 왔습니다. macOS는 이 기능을 제공한 적이 없습니다. Ekual이 그 간극을 메웁니다 — 더 깔끔한 구현과 더 많은 제어로 Windows 사용자가 수년간 누려온 음량 일관성을 Mac 사용자에게 제공합니다.",
             requirements: "macOS 14.2 이상 필요.",
-            refund_bold: "14일 환불 보장.", refund_text: "만족하지 않으신가요? 14일 이내에 연락하시면 전액 환불해 드립니다.",
+            refund_bold: "14일 무료 체험.", refund_text: "다운로드하여 14일간 모든 기능을 무료로 사용하세요. 신용카드 불필요.",
             bottom_cta_title: "일정한 음량.\n제로 노력.", bottom_cta_subtitle: "더 이상 음량 키를 찾지 마세요.",
             footer_brand: "는 CorvusDevs가 만듭니다.", footer_tagline: "macOS용 음량 이퀄라이제이션 — Apple이 잊은 기능.",
             footer_legal: "법적 고지", footer_terms: "이용약관", footer_privacy: "개인정보 처리방침", footer_contact: "문의",
@@ -1006,7 +1007,7 @@
         ru: {
             nav_features: "Функции", nav_how: "Как это работает", nav_contact: "Контакты",
             tagline: "Автоматическое выравнивание громкости для macOS. Тихие звуки громче, громкие тише — в реальном времени.",
-            cta: "Получить Ekual", hero_price: "$1,99",
+            cta: "Скачать бесплатно", hero_price: "14 дней бесплатного пробного периода · затем разовая покупка",
             ss_label1: "Чистый минималистичный интерфейс", ss_label2: "Индикаторы уровня в реальном времени",
             feat_label: "Функции", feat_title: "Всё что нужно.\nНичего лишнего.", feat_subtitle: "Ekual тихо работает в строке меню и берёт на себя всю сложность.",
             feat1_title: "Обработка в Реальном Времени", feat1_desc: "Мгновенно выравнивает громкость всех приложений. Фильмы, музыка, звонки, игры — всё сбалансировано автоматически.",
@@ -1028,7 +1029,7 @@
             why2_title: "Как Ekual решает проблему", why2_desc: "Ekual применяет сжатие динамического диапазона в реальном времени к системному аудио вашего Mac. Он отслеживает громкость аудиопотока, усиливает тихие звуки и приглушает громкие до стабильного целевого уровня. Результат: всё воспроизводится на комфортной, равномерной громкости.",
             why3_title: "В Windows есть. В macOS — нет.", why3_desc: "Windows включает опцию \"Выравнивание громкости\" в настройках аудио уже более десяти лет. macOS никогда не предлагала эту функцию. Ekual заполняет этот пробел — давая пользователям Mac ту же стабильность громкости, которой пользователи Windows наслаждаются годами, с более чистой реализацией и большим контролем.",
             requirements: "Требуется macOS 14.2 или новее.",
-            refund_bold: "14-дневная гарантия возврата.", refund_text: "Не удовлетворены? Свяжитесь с нами в течение 14 дней для полного возврата, без вопросов.",
+            refund_bold: "14 дней бесплатно.", refund_text: "Скачайте и используйте все функции бесплатно в течение 14 дней. Кредитная карта не нужна.",
             bottom_cta_title: "Стабильная громкость.\nНоль усилий.", bottom_cta_subtitle: "Перестаньте тянуться к клавишам громкости.",
             footer_brand: "создан CorvusDevs.", footer_tagline: "Выравнивание громкости для macOS — функция, которую Apple забыла.",
             footer_legal: "Правовая информация", footer_terms: "Условия использования", footer_privacy: "Политика конфиденциальности", footer_contact: "Контакты",
