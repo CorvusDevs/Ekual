@@ -1,0 +1,28 @@
+# Ekual — files allowed to be pushed to the PUBLIC GitHub repo.
+# This repo is a pure GitHub Pages site, so everything is public.
+
+_config.yml
+appcast.xml
+apple-touch-icon.png
+favicon-16x16.png
+favicon-32x32.png
+icon.png
+index.html
+index.md
+og-image.png
+privacy.html
+privacy.md
+robots.txt
+screenshot-2.png
+screenshot.png
+sitemap.xml
+success.html
+terms.html
+terms.md
+.push-allowed
+README.md
+docs/success.html
+docs/robots.txt
+docs/sitemap.xml
+worker/src/index.js
+worker/wrangler.toml
