@@ -214,6 +214,29 @@
             transform: scale(1.02);
             box-shadow: 0 4px 20px rgba(48,209,88,0.4);
         }
+        /* Secondary CTA — outlined, used for the Buy button alongside the
+           primary Download Free button. Added 2026-05-19 after a customer
+           emailed asking how to buy and couldn't find any purchase button. */
+        .cta-button-secondary {
+            display: inline-block; padding: 13px 32px;
+            background: transparent; color: var(--accent);
+            font-size: 16px; font-weight: 600; border-radius: 980px;
+            text-decoration: none; border: 2px solid var(--accent);
+            cursor: pointer; transition: all 0.3s ease;
+            margin-left: 10px;
+            font-family: inherit;
+        }
+        .cta-button-secondary:hover {
+            background: var(--accent); color: #000;
+            transform: scale(1.02);
+        }
+        .cta-row {
+            display: flex; justify-content: center;
+            flex-wrap: wrap; gap: 10px;
+        }
+        @media (max-width: 480px) {
+            .cta-button-secondary { margin-left: 0; }
+        }
 
         .hero-price {
             margin-top: 14px;
@@ -543,7 +566,10 @@
         <img src="icon.png" alt="Ekual icon" class="hero-icon">
         <h1>Ekual</h1>
         <p class="tagline" data-i18n="tagline">Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.</p>
-        <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="cta-button" data-i18n="cta">Download Free</a>
+        <div class="cta-row">
+            <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="cta-button" data-i18n="cta">Download Free</a>
+            <button type="button" class="cta-button-secondary" onclick="openCheckout()" data-i18n="cta_buy">Buy Ekual</button>
+        </div>
         <p class="hero-price" data-i18n="hero_price">14-day free trial &middot; then one-time purchase</p>
     </section>
 
@@ -681,7 +707,10 @@
     <section class="bottom-cta">
         <h2 class="gradient-text reveal" data-i18n="bottom_cta_title">Consistent volume.<br>Zero effort.</h2>
         <p data-i18n="bottom_cta_subtitle">Stop reaching for the volume keys.</p>
-        <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="cta-button" data-i18n="cta">Download Free</a>
+        <div class="cta-row">
+            <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg" class="cta-button" data-i18n="cta">Download Free</a>
+            <button type="button" class="cta-button-secondary" onclick="openCheckout()" data-i18n="cta_buy">Buy Ekual</button>
+        </div>
         <p class="hero-price" data-i18n="hero_price">14-day free trial &middot; then one-time purchase</p>
     </section>
 
@@ -728,7 +757,7 @@
         en: {
             nav_features: "Features", nav_how: "How it works", nav_contact: "Contact",
             tagline: "Automatic loudness equalization for macOS. Quiet sounds up, loud sounds down — in real time.",
-            cta: "Download Free", hero_price: "14-day free trial · then one-time purchase",
+            cta: "Download Free", cta_buy: "Buy Ekual", hero_price: "14-day free trial · then one-time purchase",
             ss_label1: "Clean, minimal interface", ss_label2: "Real-time level meters",
             feat_label: "Features", feat_title: "Everything you need.\nNothing you don't.", feat_subtitle: "Ekual runs silently in your menu bar and handles all the complexity for you.",
             feat1_title: "Real-Time Processing", feat1_desc: "Equalizes volume across all apps instantly. Movies, music, calls, games — all balanced automatically.",
@@ -759,7 +788,7 @@
         es: {
             nav_features: "Funciones", nav_how: "Cómo funciona", nav_contact: "Contacto",
             tagline: "Ecualización de volumen automática para macOS. Sonidos bajos más altos, sonidos fuertes más bajos — en tiempo real.",
-            cta: "Descargar Gratis", hero_price: "14 días de prueba gratis · luego compra única",
+            cta: "Descargar Gratis", cta_buy: "Comprar Ekual", hero_price: "14 días de prueba gratis · luego compra única",
             ss_label1: "Interfaz limpia y minimalista", ss_label2: "Medidores de nivel en tiempo real",
             feat_label: "Funciones", feat_title: "Todo lo que necesitas.\nNada que no.", feat_subtitle: "Ekual se ejecuta silenciosamente en tu barra de menú y gestiona toda la complejidad por ti.",
             feat1_title: "Procesamiento en Tiempo Real", feat1_desc: "Ecualiza el volumen en todas las apps al instante. Películas, música, llamadas, juegos — todo equilibrado automáticamente.",
@@ -790,7 +819,7 @@
         fr: {
             nav_features: "Fonctionnalités", nav_how: "Comment ça marche", nav_contact: "Contact",
             tagline: "Égalisation automatique du volume pour macOS. Les sons faibles montent, les sons forts baissent — en temps réel.",
-            cta: "Télécharger Gratuitement", hero_price: "Essai gratuit de 14 jours · puis achat unique",
+            cta: "Télécharger Gratuitement", cta_buy: "Acheter Ekual", hero_price: "Essai gratuit de 14 jours · puis achat unique",
             ss_label1: "Interface épurée et minimale", ss_label2: "Indicateurs de niveau en temps réel",
             feat_label: "Fonctionnalités", feat_title: "Tout ce qu'il vous faut.\nRien de superflu.", feat_subtitle: "Ekual fonctionne silencieusement dans votre barre de menus et gère toute la complexité pour vous.",
             feat1_title: "Traitement en Temps Réel", feat1_desc: "Égalise le volume de toutes les apps instantanément. Films, musique, appels, jeux — tout est équilibré automatiquement.",
@@ -821,7 +850,7 @@
         de: {
             nav_features: "Funktionen", nav_how: "So funktioniert's", nav_contact: "Kontakt",
             tagline: "Automatische Lautstärke-Angleichung für macOS. Leise Töne lauter, laute Töne leiser — in Echtzeit.",
-            cta: "Kostenlos herunterladen", hero_price: "14 Tage kostenlos testen · dann einmaliger Kauf",
+            cta: "Kostenlos herunterladen", cta_buy: "Ekual kaufen", hero_price: "14 Tage kostenlos testen · dann einmaliger Kauf",
             ss_label1: "Klare, minimale Oberfläche", ss_label2: "Echtzeit-Pegelanzeigen",
             feat_label: "Funktionen", feat_title: "Alles was Sie brauchen.\nNichts was Sie nicht brauchen.", feat_subtitle: "Ekual läuft lautlos in Ihrer Menüleiste und übernimmt die gesamte Komplexität für Sie.",
             feat1_title: "Echtzeit-Verarbeitung", feat1_desc: "Gleicht die Lautstärke aller Apps sofort an. Filme, Musik, Anrufe, Spiele — alles automatisch ausgeglichen.",
@@ -852,7 +881,7 @@
         pt: {
             nav_features: "Recursos", nav_how: "Como funciona", nav_contact: "Contato",
             tagline: "Equalização automática de volume para macOS. Sons baixos sobem, sons altos descem — em tempo real.",
-            cta: "Baixar Grátis", hero_price: "14 dias de teste grátis · depois compra única",
+            cta: "Baixar Grátis", cta_buy: "Comprar Ekual", hero_price: "14 dias de teste grátis · depois compra única",
             ss_label1: "Interface limpa e minimalista", ss_label2: "Medidores de nível em tempo real",
             feat_label: "Recursos", feat_title: "Tudo o que você precisa.\nNada que não precisa.", feat_subtitle: "Ekual funciona silenciosamente na sua barra de menus e gerencia toda a complexidade para você.",
             feat1_title: "Processamento em Tempo Real", feat1_desc: "Equaliza o volume de todos os apps instantaneamente. Filmes, música, chamadas, jogos — tudo equilibrado automaticamente.",
@@ -883,7 +912,7 @@
         it: {
             nav_features: "Funzionalità", nav_how: "Come funziona", nav_contact: "Contatti",
             tagline: "Equalizzazione automatica del volume per macOS. I suoni bassi si alzano, i suoni forti si abbassano — in tempo reale.",
-            cta: "Scarica Gratis", hero_price: "14 giorni di prova gratuita · poi acquisto unico",
+            cta: "Scarica Gratis", cta_buy: "Acquista Ekual", hero_price: "14 giorni di prova gratuita · poi acquisto unico",
             ss_label1: "Interfaccia pulita e minimale", ss_label2: "Indicatori di livello in tempo reale",
             feat_label: "Funzionalità", feat_title: "Tutto ciò che serve.\nNiente di superfluo.", feat_subtitle: "Ekual funziona silenziosamente nella barra dei menu e gestisce tutta la complessità per te.",
             feat1_title: "Elaborazione in Tempo Reale", feat1_desc: "Equalizza il volume di tutte le app istantaneamente. Film, musica, chiamate, giochi — tutto bilanciato automaticamente.",
@@ -914,7 +943,7 @@
         ja: {
             nav_features: "機能", nav_how: "使い方", nav_contact: "お問い合わせ",
             tagline: "macOS用の自動ラウドネスイコライゼーション。小さな音は大きく、大きな音は小さく — リアルタイムで。",
-            cta: "無料ダウンロード", hero_price: "14日間の無料トライアル · その後ワンタイム購入",
+            cta: "無料ダウンロード", cta_buy: "Ekualを購入", hero_price: "14日間の無料トライアル · その後ワンタイム購入",
             ss_label1: "クリーンでミニマルなインターフェース", ss_label2: "リアルタイムレベルメーター",
             feat_label: "機能", feat_title: "必要なものすべて。\n不要なものはゼロ。", feat_subtitle: "Ekualはメニューバーで静かに動作し、すべての複雑さを処理します。",
             feat1_title: "リアルタイム処理", feat1_desc: "すべてのアプリの音量を瞬時にイコライズ。映画、音楽、通話、ゲーム — すべて自動的にバランス調整。",
@@ -945,7 +974,7 @@
         zh: {
             nav_features: "功能", nav_how: "工作原理", nav_contact: "联系我们",
             tagline: "macOS 自动响度均衡。安静声音提升，嘈杂声音降低 — 实时处理。",
-            cta: "免费下载", hero_price: "14 天免费试用 · 之后一次性购买",
+            cta: "免费下载", cta_buy: "购买Ekual", hero_price: "14 天免费试用 · 之后一次性购买",
             ss_label1: "简洁的界面", ss_label2: "实时电平表",
             feat_label: "功能", feat_title: "你需要的一切。\n没有多余的。", feat_subtitle: "Ekual 在菜单栏中静默运行，为你处理所有复杂性。",
             feat1_title: "实时处理", feat1_desc: "即时均衡所有应用的音量。电影、音乐、通话、游戏 — 全部自动平衡。",
@@ -976,7 +1005,7 @@
         ko: {
             nav_features: "기능", nav_how: "작동 방식", nav_contact: "문의",
             tagline: "macOS용 자동 음량 이퀄라이제이션. 작은 소리는 키우고, 큰 소리는 줄이고 — 실시간으로.",
-            cta: "무료 다운로드", hero_price: "14일 무료 체험 · 이후 일회성 구매",
+            cta: "무료 다운로드", cta_buy: "Ekual 구매", hero_price: "14일 무료 체험 · 이후 일회성 구매",
             ss_label1: "깔끔한 미니멀 인터페이스", ss_label2: "실시간 레벨 미터",
             feat_label: "기능", feat_title: "필요한 것만.\n그 이상도 이하도 없이.", feat_subtitle: "Ekual은 메뉴 바에서 조용히 실행되며 모든 복잡성을 처리합니다.",
             feat1_title: "실시간 처리", feat1_desc: "모든 앱의 음량을 즉시 이퀄라이즈. 영화, 음악, 통화, 게임 — 모두 자동으로 균형 조정.",
@@ -1007,7 +1036,7 @@
         ru: {
             nav_features: "Функции", nav_how: "Как это работает", nav_contact: "Контакты",
             tagline: "Автоматическое выравнивание громкости для macOS. Тихие звуки громче, громкие тише — в реальном времени.",
-            cta: "Скачать бесплатно", hero_price: "14 дней бесплатного пробного периода · затем разовая покупка",
+            cta: "Скачать бесплатно", cta_buy: "Купить Ekual", hero_price: "14 дней бесплатного пробного периода · затем разовая покупка",
             ss_label1: "Чистый минималистичный интерфейс", ss_label2: "Индикаторы уровня в реальном времени",
             feat_label: "Функции", feat_title: "Всё что нужно.\nНичего лишнего.", feat_subtitle: "Ekual тихо работает в строке меню и берёт на себя всю сложность.",
             feat1_title: "Обработка в Реальном Времени", feat1_desc: "Мгновенно выравнивает громкость всех приложений. Фильмы, музыка, звонки, игры — всё сбалансировано автоматически.",
