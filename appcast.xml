@@ -7,13 +7,13 @@
         <language>en</language>
         <item>
             <title>Ekual v1.8</title>
-            <pubDate>Tue, 19 May 2026 10:38:41 -0300</pubDate>
-            <sparkle:version>7</sparkle:version>
+            <pubDate>Tue, 19 May 2026 10:50:19 -0300</pubDate>
+            <sparkle:version>8</sparkle:version>
             <sparkle:shortVersionString>1.8</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <enclosure url="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg"
-                       sparkle:edSignature="/feaZj4x5PTp9+ncSODJB3ZRl7xORzfY0xcH3JIXqFTZ/qbV7zgh5knTOX4ebWuqATegqgZiCgdO/eQQ5tbCDA=="
-                       length="4412027"
+                       sparkle:edSignature="TrxSRTp7dJs2wpPepduMt6oC5NJuajcXnNsn5yex8C8DW7e9CIBkcLXsbyM8bDbpMtWju5/37LArbjJP4TE9CA=="
+                       length="4412419"
                        type="application/octet-stream" />
         </item>
     </channel>
