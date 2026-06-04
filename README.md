@@ -19,7 +19,7 @@
 
 ---
 
-Quiet sounds up, loud sounds down — in real time. Ekual brings automatic loudness equalization to macOS, balancing volume across all your apps so you never have to reach for the volume slider again. Movies, music, calls, games — everything stays at a comfortable level.
+Quiet sounds up, loud sounds down, in real time. Ekual brings automatic loudness equalization to macOS, balancing volume across all your apps so you never have to reach for the volume slider again. Movies, music, calls, games, everything stays at a comfortable level.
 
 <div align="center">
   <img src="https://corvusdevs.github.io/Ekual/screenshot.png" width="480" alt="Ekual screenshot">
@@ -27,22 +27,22 @@ Quiet sounds up, loud sounds down — in real time. Ekual brings automatic loudn
 
 ## Features
 
-- **Real-Time Processing** — Equalizes volume across all apps instantly with dynamic range compression
-- **Near-Zero CPU** — Less than 1% CPU usage, runs silently in your menu bar
-- **Customizable Presets** — Light, Medium, Heavy, or fully custom compression settings
-- **App Exclusions** — Exclude specific apps from processing (keep music apps untouched, equalize everything else)
-- **Global Shortcut** — Toggle on/off with a customizable keyboard shortcut
-- **Hotswap Audio** — Seamlessly switch between output devices without interruption
-- **Bluetooth Ready** — Full support for AirPods, Bluetooth headphones, and wireless speakers
-- **Starts with Your Mac** — Automatically launches at login and runs in the menu bar
+- **Real-Time Processing**: Equalizes volume across all apps instantly with dynamic range compression
+- **Near-Zero CPU**: Less than 1% CPU usage, runs silently in your menu bar
+- **Customizable Presets**: Light, Medium, Heavy, or fully custom compression settings
+- **App Exclusions**: Exclude specific apps from processing (keep music apps untouched, equalize everything else)
+- **Global Shortcut**: Toggle on/off with a customizable keyboard shortcut
+- **Hotswap Audio**: Seamlessly switch between output devices without interruption
+- **Bluetooth Ready**: Full support for AirPods, Bluetooth headphones, and wireless speakers
+- **Starts with Your Mac**: Automatically launches at login and runs in the menu bar
 
 ## Why Ekual?
 
-Windows has had loudness equalization built in for over a decade. macOS never got it. Ekual fills that gap — a lightweight, native solution that just works.
+Windows has had loudness equalization built in for over a decade. macOS never got it. Ekual fills that gap, a lightweight, native solution that just works.
 
 ## Pricing
 
-Ekual is free to download with a **14-day trial** — all features included, no credit card required. After the trial, a one-time purchase unlocks Ekual forever.
+Ekual is free to download with a **14-day trial**, all features included, no credit card required. After the trial, a one-time purchase unlocks Ekual forever.
 
 ## Privacy
 
