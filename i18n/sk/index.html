@@ -1337,11 +1337,11 @@
         // 1. Explicit user choice always wins.
         const saved = localStorage.getItem("ekual-lang");
         if (saved && T[saved]) { setLanguage(saved); return; }
-        // 2. On a pre-rendered per-locale page (/i18n/<locale>/ ships
-        //    <html lang="<locale>">), pin to that locale so a visitor who
-        //    clicked a localized search result keeps the language of the
-        //    URL they landed on. The EN main page (lang="en") falls through
-        //    to browser detection below.
+        // 2. On a pre-rendered per-locale page, the build step sets the
+        //    document lang attribute to that locale, so pin to it: a
+        //    visitor who clicked a localized search result keeps the
+        //    language of the URL they landed on. The EN main page falls
+        //    through to browser detection below.
         const pageLang = document.documentElement.lang;
         if (pageLang && pageLang !== "en" && T[pageLang]) { setLanguage(pageLang); return; }
         // 3. Main/x-default page: detect from the browser.
