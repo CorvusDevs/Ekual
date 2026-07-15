@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://corvusdevs.github.io/Ekual/icon.png" width="128" height="128" alt="Ekual icon">
+  <img src="https://corvusdevs.github.io/Ekual/icon.png" width="160" height="160" alt="Ekual icon">
   <h1>Ekual</h1>
   <p><strong>The loudness equalization macOS never had</strong></p>
   <p>
