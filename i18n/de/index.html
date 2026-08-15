@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Ekual: Automatische Lautstärke-Angleichung für macOS</title>
     <meta name="description" content="Automatische Lautstärke-Angleichung für macOS. Leise Töne lauter, laute Töne leiser, in Echtzeit.">
     <meta name="keywords" content="loudness equalization, macOS, volume balancing, audio equalizer, mac menu bar app, dynamic range compression, volume leveling, ekual">
@@ -87,9 +87,9 @@
         }
     }
     </script>
-    <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png?v=2">
     <style>
         :root {
             --bg: #000;
@@ -205,7 +205,7 @@
         }
 
         .hero-icon {
-            width: 128px; height: 128px; border-radius: 30px;
+            width: 156px; height: 156px; border-radius: 35px;
             margin-bottom: 28px; position: relative;
             box-shadow: 0 0 100px 40px rgba(48,209,88,0.2), 0 0 200px 80px rgba(48,209,88,0.08);
         }
@@ -616,7 +616,96 @@
             .section-title { font-size: 32px; letter-spacing: -1px; }
             .bottom-cta h2 { font-size: 32px; }
         }
-    
+        /* ac-no-horizontal-scroll v1 */
+        html, body { overflow-x: clip; max-width: 100%; }
+        img, video, iframe { max-width: 100%; height: auto; }
+        pre, table { max-width: 100%; overflow-x: auto; }
+
+        /* Ekual signal-console direction */
+        :root {
+            --bg: #070b0d;
+            --surface: #0d1417;
+            --surface-2: #142025;
+            --border: rgba(192, 218, 224, 0.14);
+            --text: #eef7f4;
+            --text-secondary: #91a5aa;
+            --accent: #45ef8b;
+            --accent-dim: rgba(69, 239, 139, 0.12);
+            --accent-glow: rgba(69, 239, 139, 0.2);
+            --signal-warm: #ffb454;
+        }
+        body {
+            background:
+                linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
+                var(--bg);
+            background-size: 48px 48px;
+        }
+        body::before {
+            content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+            background: radial-gradient(circle at 50% 8%, rgba(56, 134, 118, .16), transparent 42%);
+        }
+        nav { height: 58px; background: rgba(7,11,13,.82); border-color: var(--border); }
+        .nav-brand { letter-spacing: -.02em; }
+        .nav-brand img { border-radius: 8px; }
+        .hero { padding-top: 142px; }
+        .hero::before { display: none; }
+        .hero-icon { width: 112px; height: 112px; border-radius: 26px; margin-bottom: 22px; box-shadow: 0 24px 80px rgba(69,239,139,.16); }
+        .hero h1 { font-size: clamp(64px, 9vw, 112px); letter-spacing: -.075em; }
+        .hero .tagline { max-width: 720px; color: #bdd0d3; }
+        .hero-price, .section-label, .screenshot-wrap .label {
+            font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+            letter-spacing: .06em; text-transform: uppercase;
+        }
+        .cta-button { background: var(--accent); color: #041008; border-radius: 999px; box-shadow: 0 12px 38px rgba(69,239,139,.18); }
+        .cta-button-secondary { border-radius: 999px; background: rgba(255,255,255,.025); }
+        .signal-stage { max-width: 1060px; margin: 58px auto 0; padding: 0 24px; }
+        .signal-console { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 28px; background: rgba(10,17,20,.86); box-shadow: 0 40px 100px rgba(0,0,0,.35); }
+        .signal-head { display: flex; justify-content: space-between; gap: 16px; padding: 15px 20px; border-bottom: 1px solid var(--border); color: var(--text-secondary); font: 11px/1.4 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: .09em; text-transform: uppercase; }
+        .signal-live { color: var(--accent); }
+        .signal-live::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 14px currentColor; }
+        .signal-plot { position: relative; height: 210px; background: repeating-linear-gradient(0deg, transparent 0 41px, rgba(255,255,255,.045) 42px), repeating-linear-gradient(90deg, transparent 0 83px, rgba(255,255,255,.035) 84px); }
+        .comfort-band { position: absolute; left: 50%; right: 0; top: 70px; height: 70px; border-top: 1px solid rgba(69,239,139,.35); border-bottom: 1px solid rgba(69,239,139,.35); background: linear-gradient(90deg, rgba(69,239,139,.04), rgba(69,239,139,.12)); }
+        .signal-wave { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .signal-wave .raw { fill: none; stroke: var(--signal-warm); stroke-width: 3; vector-effect: non-scaling-stroke; }
+        .signal-wave .even { fill: none; stroke: var(--accent); stroke-width: 3; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 7px rgba(69,239,139,.35)); }
+        .signal-divider { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(transparent, rgba(255,255,255,.35), transparent); }
+        .signal-divider::after { content: "EKUAL"; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); color: var(--accent); background: #0c1518; border: 1px solid rgba(69,239,139,.25); border-radius: 999px; padding: 5px 9px; font: 10px ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: .12em; }
+        .signal-foot { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); color: var(--text-secondary); font: 11px ui-monospace, "SFMono-Regular", Menlo, monospace; text-transform: uppercase; letter-spacing: .08em; }
+        .signal-foot span { padding: 13px 18px; }
+        .signal-foot span:last-child { border-left: 1px solid var(--border); color: var(--accent); }
+        .showcase-band { margin-top: 96px; background: linear-gradient(180deg, rgba(20,32,37,.6), rgba(7,11,13,0)); border-top: 1px solid var(--border); border-bottom: 0; }
+        .showcase { align-items: end; }
+        .screenshot-wrap img { border-radius: 25px; filter: drop-shadow(0 28px 60px rgba(0,0,0,.55)); }
+        .features-section, .how-section, .why-section, .reviews-section { max-width: 1120px; }
+        .feature-card, .step, .why-item, .testimonial-card { background: rgba(13,20,23,.72); border-color: var(--border); border-radius: 18px; }
+        .feature-card { min-height: 220px; }
+        .feature-card:hover { border-color: rgba(69,239,139,.32); transform: translateY(-3px); }
+        .gradient-text { background: none; -webkit-text-fill-color: currentColor; color: var(--text); }
+        .section-title { max-width: 820px; }
+        .requirements, .refund-banner { border-color: var(--border); }
+        .bottom-cta { border-top: 1px solid var(--border); background: radial-gradient(circle at 50% 100%, rgba(69,239,139,.12), transparent 52%); }
+        :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition-duration: .01ms !important; } .reveal { opacity: 1; transform: none; } }
+
+        /* ac-nav-hamburger v1 */
+        .nav-toggle { display: none; background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text); cursor: pointer; padding: 8px; align-items: center; justify-content: center; }
+        .nav-toggle svg { display: block; }
+        .nav-brand { flex-shrink: 0; }
+        @media (max-width: 720px) {
+            .nav-toggle { display: inline-flex; }
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: rgba(7,11,13,.97); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 4px 24px 8px; margin: 0; list-style: none; gap: 0; -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); }
+            .nav-links li { width: 100%; }
+            .nav-links li a { display: block; padding: 14px 0; border-top: 1px solid var(--border); }
+            .nav-links li:first-child a { border-top: 0; }
+            body.nav-open .nav-links { display: flex; }
+            body.nav-open .nav-toggle { background: var(--surface); }
+            .signal-plot { height: 160px; }
+            .comfort-band { top: 52px; height: 56px; }
+        }
+        /* ac-footer-mobile v1 */
+        @media (max-width: 720px) { body { min-height: 0; } footer { padding-bottom: 24px; padding-top: 24px; } }
+
         /* SVG language flags in dropdown, added by inject-i18n-flags.py */
         .lang-menu button {
             display: flex; align-items: center; gap: 8px;
@@ -632,6 +721,7 @@
     <nav>
         <a href="https://corvusdevs.github.io" class="nav-brand"><img src="https://avatars.githubusercontent.com/u/25494090?v=4" alt="CorvusDevs">Corvus<span>Devs</span></a>
         <div style="display:flex;align-items:center;">
+            <!-- ac-nav-hamburger v2 --><button class="nav-toggle" aria-label="Menu" aria-expanded="false" onclick="var o=document.body.classList.toggle('nav-open');this.setAttribute('aria-expanded',o);event.stopPropagation();"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button><script>(function(){document.addEventListener("click",function(e){if(!document.body.classList.contains("nav-open"))return;var n=document.querySelector("nav");if(n&&!n.contains(e.target)){document.body.classList.remove("nav-open");var b=document.querySelector(".nav-toggle");if(b)b.setAttribute("aria-expanded","false");}});})();</script>
             <ul class="nav-links">
                 <li><a href="#features" data-i18n="nav_features">Funktionen</a></li>
                 <li><a href="#how" data-i18n="nav_how">So funktioniert's</a></li>
@@ -688,6 +778,20 @@
             <button type="button" class="cta-button-secondary" onclick="openCheckout()" data-i18n="cta_buy">Ekual kaufen</button>
         </div>
         <p class="hero-price" data-i18n="hero_price">14 Tage kostenlos testen · dann einmaliger Kauf</p>
+        <div class="signal-stage" aria-label="Uneven audio becomes comfortably balanced">
+            <div class="signal-console">
+                <div class="signal-head"><span>System audio / live dynamics</span><span class="signal-live">Processing locally</span></div>
+                <div class="signal-plot">
+                    <div class="comfort-band"></div>
+                    <svg class="signal-wave" viewBox="0 0 1000 210" preserveAspectRatio="none" aria-hidden="true">
+                        <path class="raw" d="M0 105 L28 102 L50 52 L72 163 L96 25 L120 184 L145 76 L168 128 L192 43 L216 166 L240 92 L266 117 L292 69 L320 145 L346 97 L374 108 L400 80 L430 134 L460 101 L500 105"/>
+                        <path class="even" d="M500 105 C530 84 550 91 575 109 S620 119 645 100 S690 91 715 108 S760 116 785 101 S830 94 855 107 S900 114 925 102 S970 97 1000 105"/>
+                    </svg>
+                    <div class="signal-divider"></div>
+                </div>
+                <div class="signal-foot"><span>Before / constant volume changes</span><span>After / comfortable listening band</span></div>
+            </div>
+        </div>
     </section>
 
     <!-- Screenshots -->
@@ -875,7 +979,7 @@
 
         function openCheckout() {
             Paddle.Checkout.open({
-                items: [{ priceId: "pri_01kn3hw3263q8h0yavh9yd95kd", quantity: 1 }],
+                items: [{ priceId: "pri_01kxhn7ccvggp71mqfk47kzp1x", quantity: 1 }],
                 settings: {
                     successUrl: "https://corvusdevs.github.io/Ekual/success",
                 },

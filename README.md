@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://corvusdevs.github.io/Ekual/icon.png" width="160" height="160" alt="Ekual icon">
   <h1>Ekual</h1>
-  <p><strong>The loudness equalization macOS never had</strong></p>
+  <p><strong>Quiet sounds up. Loud sounds down. Every app, in real time.</strong></p>
   <p>
     <a href="https://github.com/CorvusDevs/Ekual/releases/latest/download/Ekual.dmg">
       <img src="https://img.shields.io/badge/Download-Free-30d158?style=for-the-badge&logo=apple&logoColor=white" alt="Download Free">
@@ -25,10 +25,14 @@ Quiet sounds up, loud sounds down, in real time. Ekual brings automatic loudness
   <img src="https://corvusdevs.github.io/Ekual/screenshot.png" width="480" alt="Ekual screenshot">
 </div>
 
-## Features
+## One comfortable volume
+
+Every app, stream, call, trailer, and media file arrives at a different level. Ekual balances your Mac's system audio as it plays, so quiet moments stay audible and loud surprises stay under control.
+
+## What Ekual gives you
 
 - **Real-Time Processing**: Equalizes volume across all apps instantly with dynamic range compression
-- **Near-Zero CPU**: Less than 1% CPU usage, runs silently in your menu bar
+- **Native and lightweight**: Lives in the menu bar and stays out of the way
 - **Customizable Presets**: Light, Medium, Heavy, or fully custom compression settings
 - **App Exclusions**: Exclude specific apps from processing (keep music apps untouched, equalize everything else)
 - **Global Shortcut**: Toggle on/off with a customizable keyboard shortcut
@@ -36,17 +40,19 @@ Quiet sounds up, loud sounds down, in real time. Ekual brings automatic loudness
 - **Bluetooth Ready**: Full support for AirPods, Bluetooth headphones, and wireless speakers
 - **Starts with Your Mac**: Automatically launches at login and runs in the menu bar
 
-## Why Ekual?
+## Built for the way you listen
 
-Windows has had loudness equalization built in for over a decade. macOS never got it. Ekual fills that gap, a lightweight, native solution that just works.
+Pick Light, Medium, or Heavy, or make a preset of your own. Ekual follows output-device changes, supports Bluetooth audio, and lets you exclude apps that should remain untouched.
 
-## Pricing
+All processing stays on your Mac. Ekual has no analytics, telemetry, or audio uploads.
+
+## Try it free
 
 Ekual is free to download with a **14-day trial**, all features included, no credit card required. After the trial, a one-time purchase unlocks Ekual forever.
 
-## Privacy
+## Latest release
 
-All audio processing happens locally on your device. No data leaves your Mac. No analytics, no telemetry.
+Version 1.9.4 is the latest published release. See the [release history](https://github.com/CorvusDevs/Ekual/releases) for downloads and changes.
 
 ## More from CorvusDevs
 
