@@ -366,22 +366,55 @@
         }
         applyLang();
 
-        (function showLicenseKey() {
+        async function showLicenseKey() {
             const params = new URLSearchParams(window.location.search);
             const txn = params.get("_ptxn") || params.get("txn");
             const keyBox = document.getElementById("keyBox");
-            if (txn) {
-                keyBox.textContent = txn;
-            } else {
-                keyBox.textContent = "-";
+            const copyBtn = document.getElementById("copyBtn");
+
+            function showUnavailable(message) {
+                keyBox.textContent = message;
                 keyBox.style.color = "var(--text-secondary)";
+                keyBox.style.fontFamily = "inherit";
+                keyBox.style.fontSize = "14px";
+                keyBox.style.letterSpacing = "0";
+                copyBtn.disabled = true;
+                copyBtn.style.opacity = "0.5";
             }
-        })();
+
+            if (!txn || !/^txn_[a-z0-9]+$/.test(txn)) {
+                showUnavailable("We could not retrieve your license. Please check your email or contact support.");
+                return;
+            }
+
+            for (let attempt = 0; attempt < 12; attempt++) {
+                try {
+                    const response = await fetch(
+                        `https://ekual-license.soyelale.workers.dev/verify?key=${encodeURIComponent(txn)}`,
+                        { cache: "no-store" }
+                    );
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.valid) {
+                            keyBox.textContent = txn;
+                            return;
+                        }
+                    }
+                } catch {
+                    // A transient network error is handled by the retry below.
+                }
+                await new Promise(resolve => setTimeout(resolve, 1500));
+            }
+
+            showUnavailable("Your purchase is still being processed. Your license will arrive by email shortly.");
+        }
+        showLicenseKey();
 
         function copyCode() {
             const lang = (navigator.language || "en").slice(0, 2);
             const t = T[lang] || T.en;
             const code = document.getElementById("keyBox").textContent;
+            if (!/^txn_[a-z0-9]+$/.test(code)) return;
             navigator.clipboard.writeText(code);
             const span = document.querySelector("#copyBtn span");
             span.textContent = t.copied;

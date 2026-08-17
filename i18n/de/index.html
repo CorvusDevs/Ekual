@@ -976,14 +976,21 @@
     <!-- Paddle Checkout -->
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script>
-        Paddle.Initialize({ token: "live_56066aaf7cbe507b874f560dbcd" });
+        Paddle.Initialize({
+            token: "live_56066aaf7cbe507b874f560dbcd",
+            eventCallback(event) {
+                if (event.name !== "checkout.completed") return;
+                const transactionId = event.data?.transaction_id;
+                if (!transactionId) return;
+                const successUrl = new URL("https://corvusdevs.github.io/Ekual/success.html");
+                successUrl.searchParams.set("txn", transactionId);
+                window.location.assign(successUrl.toString());
+            },
+        });
 
         function openCheckout() {
             Paddle.Checkout.open({
                 items: [{ priceId: "pri_01kxhn7ccvggp71mqfk47kzp1x", quantity: 1 }],
-                settings: {
-                    successUrl: "https://corvusdevs.github.io/Ekual/success",
-                },
             });
         }
     </script>
