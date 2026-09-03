@@ -52,7 +52,7 @@ Ekual is free to download with a **14-day trial**, all features included, no cre
 
 ## Latest release
 
-Version 1.9.4 is the latest published release. See the [release history](https://github.com/CorvusDevs/Ekual/releases) for downloads and changes.
+Version 1.9.6 improves audio stability under heavy system load, prevents distorted boosted peaks, and recovers automatically from protected pass-through in seconds. See the [release history](https://github.com/CorvusDevs/Ekual/releases) for downloads and changes.
 
 ## More from CorvusDevs
 
