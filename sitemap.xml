@@ -132,4 +132,7 @@
     <loc>https://corvusdevs.github.io/Ekual/i18n/zh-Hant/</loc>
     <priority>0.8</priority>
   </url>
+  <!-- LOCALIZED_CHANGELOG:START -->
+  <url><loc>https://corvusdevs.github.io/Ekual/changelog.html</loc></url>
+  <!-- LOCALIZED_CHANGELOG:END -->
 </urlset>
