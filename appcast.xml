@@ -6,14 +6,14 @@
         <description>Ekual update feed</description>
         <language>en</language>
         <item>
-            <title>Ekual v1.9.8</title>
-            <pubDate>Fri, 04 Sep 2026 21:02:29 -0300</pubDate>
-            <sparkle:version>20</sparkle:version>
-            <sparkle:shortVersionString>1.9.8</sparkle:shortVersionString>
+            <title>Ekual v1.9.9</title>
+            <pubDate>Fri, 04 Sep 2026 22:02:03 -0300</pubDate>
+            <sparkle:version>21</sparkle:version>
+            <sparkle:shortVersionString>1.9.9</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.2</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/CorvusDevs/Ekual/releases/download/v1.9.8/Ekual.zip"
-                       sparkle:edSignature="iKQ6Ohm9DcQR/3d6eNq75+9kWJOyMoO4QPImDWg7leY3mV0IrT10BtOjaL4SImhijKYg8tlgqYqsSSV65p+IBA=="
-                       length="3540381"
+            <enclosure url="https://github.com/CorvusDevs/Ekual/releases/download/v1.9.9/Ekual.zip"
+                       sparkle:edSignature="ySslg6jPyq1xzERvqJPVFQAj05RaEktoo9bS7uCw9Z6eSnq2q0su+SiPvDglBf4r3rdwNQCyjTOxJHEYFdQ0BQ=="
+                       length="3538441"
                        type="application/octet-stream" />
         </item>
     </channel>

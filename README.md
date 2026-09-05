@@ -52,7 +52,7 @@ Ekual is free to download with a **14-day trial**, all features included, no cre
 
 ## Latest release
 
-Version 1.9.8 gives every audio route the larger scheduling margin proven under heavy system load, preventing the first robotic-audio episode instead of reacting after it begins. See the [release history](https://github.com/CorvusDevs/Ekual/releases) for downloads and changes.
+Version 1.9.9 prevents false Audio Protected states by reacting to direct Core Audio deadline failures instead of the system-wide load average. See the [release history](https://github.com/CorvusDevs/Ekual/releases) for downloads and changes.
 
 ## More from CorvusDevs
 
