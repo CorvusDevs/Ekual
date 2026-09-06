@@ -52,7 +52,7 @@ Ekual is free to download with a **14-day trial**, all features included, no cre
 
 ## Latest release
 
-Version 1.9.10 keeps audio stable when Bluetooth headphones switch between stereo playback and the mono hands-free profile used for voice messages and calls. See the [release history](https://github.com/CorvusDevs/Ekual/releases) for downloads and changes.
+Version 1.9.11 restores full-quality stereo automatically after a Bluetooth microphone session ends, while keeping the same headset microphone available to calling and messaging apps. See the [release history](https://github.com/CorvusDevs/Ekual/releases) for downloads and changes.
 
 ## More from CorvusDevs
 
